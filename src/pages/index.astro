@@ -1,300 +1,316 @@
 ---
+// The home page, in the manner of a maison's website:
+// hero (photo + light panel) · a carousel of the five experiences · two editorial blocks
+// (photo beside centred text) · the agenda, while there are dates · partners (photo + panel)
+// · the cities as photo tiles. Photo places are numbered in content/site.yaml, under photos.
 import Base from '../layouts/Base.astro';
-import Heading from '../components/Heading.astro';
-import { copy, site, upcoming, shortDate, rich, link } from '../lib/content';
+import Photo from '../components/Photo.astro';
+import { copy, site, upcoming, shortDate, link, slug } from '../lib/content';
 
 const t = copy('en');
 const events = upcoming();
 const pad = (n: number) => String(n).padStart(2, '0');
 
-type Item = { name: string; line: string };
+type Item = { name: string; line: string; kind?: string };
 const experiences = t.experiences.items as Item[];
-
-// "Lisbon → London", with the last city in italic
-const cities = site.cities;
-const routeLine = cities.map((c, i) => (i === cities.length - 1 && i > 0 ? `*${c}*` : c)).join(' → ');
-
-// The seal's ring of text, repeated so it closes neatly around the circle
-const sealText = `${t.hero.seal} · `.toUpperCase();
+// Three cards at a time on wide screens, two on phones (the script sets the real count)
+const pages = Math.ceil(experiences.length / 3);
 ---
 <Base>
-  <!-- 1 · HERO · Linho -->
-  <section class="hero" aria-label="Seven Hills">
-    <div class="wrap hero-inner">
-      <Heading as="h1" lines={t.hero.lines} class="hero-title" />
-      <div class="hero-foot">
-        <div class="hero-intro" data-enter>
-          {t.hero.intro.map((p: string) => <p class="intro">{p}</p>)}
-        </div>
-        <div class="seal" data-enter style="--delay: 0.9s" aria-hidden="true">
-          <svg class="seal-ring" viewBox="0 0 200 200" focusable="false">
-            <defs><path id="seal-path" d="M 100,100 m -79,0 a 79,79 0 1,1 158,0 a 79,79 0 1,1 -158,0" /></defs>
-            <text><textPath href="#seal-path" textLength="496" lengthAdjust="spacing">{sealText}</textPath></text>
-          </svg>
-          <img class="seal-mono" src={link('/brand/monogram-noite.png')} alt="" width="889" height="921" decoding="async" />
-        </div>
-      </div>
+  <!-- HERO · the photo, then a light panel (side by side on wide screens) -->
+  <section class="split hero" aria-labelledby="hero-title">
+    <Photo name="hero" ratio="16 / 10" mobileRatio="15 / 16" sizes="(min-width: 48rem) 50vw, 100vw" eager />
+    <div class="split-panel">
+      <p class="label">{t.hero.label}</p>
+      <h1 id="hero-title" class="title">{t.hero.title}</h1>
+      <p class="split-text">{t.hero.text}</p>
+      <a class="cta" href={link('/apply/')}>{t.hero.cta}</a>
     </div>
   </section>
 
-  <!-- 2 · THE CIRCLE · Noite -->
-  <section id="circle" class="section circle theme-noite" aria-labelledby="circle-title">
-    <div class="wrap grid">
-      <p class="label" data-reveal>{t.circle.label}</p>
-      <Heading id="circle-title" lines={t.circle.lines} flow />
-      <div class="right circle-text" data-reveal>
-        <p class="lead">{t.circle.text}</p>
-        <p class="label values">{t.circle.values}</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 3 · EXPERIENCES · Linho: a full-width editorial list -->
-  <section id="experiences" class="section experiences" aria-labelledby="exp-title">
+  <!-- EXPERIENCES · a carousel of cards -->
+  <section id="experiences" class="block" aria-labelledby="exp-title">
     <div class="wrap">
-      <div class="exp-head">
-        <p class="label" data-reveal>{t.experiences.label}</p>
-        <Heading id="exp-title" lines={t.experiences.lines} flow />
+      <h2 id="exp-title" class="title block-title">{t.experiences.title}</h2>
+      <div class="carousel" data-carousel>
+        <ul class="track" data-track tabindex="0" aria-label={t.experiences.title}>
+          {experiences.map((e) => (
+            <li class="card">
+              <div class="card-media">
+                <Photo name={slug(e.name)} ratio="4 / 5" sizes="(min-width: 64rem) 18rem, (min-width: 48rem) 30vw, 46vw" />
+                {e.kind && <span class="badge">{e.kind}</span>}
+              </div>
+              <h3 class="card-name">{e.name}</h3>
+              <p class="card-line">{e.line}</p>
+            </li>
+          ))}
+        </ul>
+        <div class="pager">
+          <button class="icon-button pager-prev" type="button" data-prev aria-label={t.experiences.previous} disabled>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5" /></svg>
+          </button>
+          <p class="pager-count" data-count aria-live="polite">1 / {pages}</p>
+          <button class="icon-button pager-next" type="button" data-next aria-label={t.experiences.next}>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5" /></svg>
+          </button>
+        </div>
       </div>
-      <ol class="exp-list">
-        {experiences.map((e, i) => (
-          <li class="exp-row" data-row>
-            <span class="rule" aria-hidden="true"></span>
-            <span class="num exp-num">{pad(i + 1)}</span>
-            <h3 class="exp-name"><span>{e.name}</span></h3>
-            <p class="exp-line">{e.line}</p>
-            {i === experiences.length - 1 && <span class="rule rule-end" aria-hidden="true"></span>}
-          </li>
-        ))}
-      </ol>
     </div>
   </section>
 
-  <!-- 4 · AGENDA · Noite. Only there while content/site.yaml has upcoming dates. -->
+  <!-- AGENDA · only there while content/site.yaml has upcoming dates -->
   {events.length > 0 && (
-    <section id="agenda" class="section agenda theme-noite" aria-labelledby="agenda-title" data-agenda>
-      <div class="wrap grid">
-        <div class="agenda-head">
-          <p class="label" data-reveal>{t.agenda.label}</p>
-          <Heading id="agenda-title" lines={t.agenda.lines} flow />
-        </div>
-        <div class="agenda-body">
-          <ol class="events">
-            {events.map((e) => (
-              <li class="event" data-event-date={e.date} data-reveal>
-                <time class="event-date" datetime={e.date}>{shortDate(e.date)}</time>
-                <div class="event-main">
-                  <p class="event-format">
-                    {e.format}{e.edition ? <span class="event-ed"> Nº {e.edition}</span> : null}
-                  </p>
-                  {e.note && <p class="event-note">{e.note}</p>}
-                  <p class="event-meta">
-                    <span>{[e.weekday, e.time ? String(e.time).replace(':', 'H') : null, e.city].filter(Boolean).join(' · ')}</span>
-                    <span>{t.agenda.location_note}</span>
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-          <p class="follow" data-reveal>
-            {t.agenda.follow} · <a class="link is-underlined" href={site.instagramUrl} rel="noopener">{site.instagramHandle}</a>
-          </p>
-        </div>
+    <section id="agenda" class="block agenda" aria-labelledby="agenda-title" data-agenda>
+      <div class="wrap narrow">
+        <p class="label agenda-label">{t.agenda.label}</p>
+        <h2 id="agenda-title" class="title block-title">{t.agenda.title}</h2>
+        <ol class="events">
+          {events.map((e) => (
+            <li class="event" data-event-date={e.date}>
+              <time class="event-date" datetime={e.date}>{shortDate(e.date)}</time>
+              <div>
+                <p class="event-format">
+                  {e.format}{e.edition ? <span class="event-ed"> · Nº {e.edition}</span> : null}
+                </p>
+                {e.note && <p class="event-note">{e.note}</p>}
+                <p class="event-meta">
+                  {[e.weekday, e.time ? String(e.time).replace(':', 'H') : null, e.city].filter(Boolean).join(' · ')}
+                  <br />{t.agenda.location_note}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <p class="follow">
+          {t.agenda.follow} · <a class="cta" href={site.instagramUrl} rel="noopener">{site.instagramHandle}</a>
+        </p>
       </div>
     </section>
   )}
 
-  <!-- 5 · CITIES · Areia: one line -->
-  <section class="section cities theme-areia" aria-labelledby="cities-title">
-    <div class="wrap cities-inner">
-      <p class="label" data-reveal>{t.cities.label}</p>
-      <h2 id="cities-title" class="heading cities-line" data-split set:html={rich(routeLine)} />
-      <p class="intro more" data-reveal>{t.cities.more}</p>
-    </div>
-  </section>
-
-  <!-- 6 · HOW TO JOIN · Sálvia -->
-  <section id="join" class="section join theme-salvia" aria-labelledby="join-title">
-    <div class="wrap grid">
-      <h2 id="join-title" class="label" data-reveal>{t.join.label}</h2>
-      <ol class="steps">
-        {t.join.steps.map((s: Item, i: number) => (
-          <li class="step" data-reveal>
-            <span class="num step-num">{pad(i + 1)}</span>
-            <h3 class="step-name">{s.name}</h3>
-            <p class="step-line">{s.line}</p>
-          </li>
-        ))}
-      </ol>
-      <div class="join-close">
-        <Heading as="p" lines={t.join.lines} flow breaks class="join-line" />
-        <a class="circle-button join-apply" href={link('/apply/')} data-reveal>{t.join.cta}</a>
+  <!-- THE CIRCLE · centred text, the photo beside it -->
+  <section id="circle" class="block" aria-labelledby="circle-title">
+    <div class="wrap editorial">
+      <div class="ed-text">
+        <p class="label">{t.circle.label}</p>
+        <h2 id="circle-title" class="title">{t.circle.title}</h2>
+        <p>{t.circle.text}</p>
+        <p class="values">{t.circle.values}</p>
+        <a class="cta" href={link('/#join')}>{t.circle.cta}</a>
       </div>
+      <Photo name="circle" ratio="3 / 4" class="ed-media" sizes="(min-width: 48rem) 30rem, 100vw" />
     </div>
   </section>
 
-  <!-- 7 · PARTNERS · Linho -->
-  <section id="partners" class="section partners" aria-labelledby="partners-title">
-    <div class="wrap grid">
-      <p class="label" data-reveal>{t.partners.label}</p>
-      <Heading id="partners-title" lines={t.partners.lines} flow />
-      <div class="right partners-body">
-        <ul class="types">
-          {t.partners.types.map((p: Item) => (
-            <li data-reveal>
-              <h3 class="label">{p.name}</h3>
-              <p>{p.line}</p>
+  <!-- HOW TO JOIN · the photo, centred text beside it -->
+  <section id="join" class="block" aria-labelledby="join-title">
+    <div class="wrap editorial is-reverse">
+      <div class="ed-text">
+        <p class="label">{t.join.label}</p>
+        <h2 id="join-title" class="title">{t.join.title}</h2>
+        <ol class="steps">
+          {t.join.steps.map((s: Item, i: number) => (
+            <li>
+              <span class="step-num">{pad(i + 1)}</span>
+              <h3 class="step-name">{s.name}</h3>
+              <p>{s.line}</p>
             </li>
           ))}
-        </ul>
-        <a class="link is-underlined partners-cta" href={link('/partners/')} data-reveal>{t.partners.cta}</a>
+        </ol>
+        <a class="cta" href={link('/apply/')}>{t.join.cta}</a>
       </div>
+      <Photo name="join" ratio="4 / 5" class="ed-media" sizes="(min-width: 48rem) 30rem, 100vw" />
+    </div>
+  </section>
+
+  <!-- PARTNERS · the photo, then a light panel (side by side on wide screens) -->
+  <section id="partners" class="split partners" aria-labelledby="partners-title">
+    <Photo name="partners" ratio="16 / 10" mobileRatio="15 / 16" sizes="(min-width: 48rem) 50vw, 100vw" />
+    <div class="split-panel">
+      <p class="label">{t.partners.label}</p>
+      <h2 id="partners-title" class="title">{t.partners.title}</h2>
+      <ul class="types">
+        {t.partners.types.map((p: Item) => (
+          <li>
+            <h3 class="type-name">{p.name}</h3>
+            <p>{p.line}</p>
+          </li>
+        ))}
+      </ul>
+      <a class="cta" href={link('/partners/')}>{t.partners.cta}</a>
+    </div>
+  </section>
+
+  <!-- CITIES · one photo tile per city -->
+  <section id="cities" class="block" aria-labelledby="cities-title">
+    <div class="wrap">
+      <h2 id="cities-title" class="title block-title">{t.cities.title}</h2>
+      <ul class="tiles">
+        {site.cities.map((c) => (
+          <li class="tile">
+            <Photo name={slug(c)} ratio="16 / 10" sizes="(min-width: 48rem) 37rem, 100vw" />
+            <h3 class="label">{c}</h3>
+          </li>
+        ))}
+      </ul>
+      <p class="more">{t.cities.more}</p>
     </div>
   </section>
 </Base>
 
 <style>
-  .label { margin-bottom: clamp(1.25rem, 3vw, 2rem); }
-
-  /* 1 · Hero: the giant headline up top, the intro and the seal along the bottom */
-  .hero {
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
-    padding-block: calc(var(--header-h) + clamp(2rem, 6vw, 4rem)) clamp(1.75rem, 4vw, 3rem);
-  }
-  .hero-inner { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: clamp(3rem, 9vw, 6rem); }
-  .hero :global(.hero-title) { color: var(--salvia); }
-  .hero-foot {
+  /* ── Split: a photo and a light panel (hero, partners). Stacked on phones. ── */
+  .split { display: grid; background: var(--panel); }
+  .split-panel {
     display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--col-gap);
-    align-items: end;
+    justify-items: center;
+    align-content: center;
+    gap: 0.7rem;
+    padding: 1.75rem var(--gutter) 1.6rem;
+    text-align: center;
   }
-  .hero-intro { grid-column: 1 / span 8; }
-  .hero-intro p { text-wrap: balance; }
-  .seal {
-    grid-column: 9 / -1;
-    justify-self: end;
-    display: grid;
-    place-items: center;
-    width: clamp(5.75rem, 4.5rem + 4vw, 8.75rem);
-    aspect-ratio: 1;
-  }
-  .seal > * { grid-area: 1 / 1; }
-  .seal-ring { width: 100%; height: 100%; overflow: visible; animation: spin 60s linear infinite; }
-  .seal-ring text { font-family: var(--font-black); font-size: 13.5px; fill: var(--noite); }
-  .seal-mono { width: 30%; height: auto; }
-
-  /* 2 · Circle: on Noite */
-  .circle-text { margin-top: clamp(3rem, 7vw, 5.5rem); display: grid; gap: clamp(2rem, 4vw, 3rem); }
-  .lead { font-family: var(--font-display); font-size: clamp(1.65rem, 1.15rem + 1.6vw, 2.65rem); line-height: 1.12; max-width: 24ch; }
-  .values { margin: 0; line-height: 2; max-width: 34rem; }
-
-  /* 3 · Experiences: five rows, thin rules */
-  .exp-head { margin-bottom: clamp(3rem, 7vw, 5.5rem); }
-  .exp-row {
-    position: relative;
-    display: grid;
-    gap: 0.6rem;
-    padding-block: 1.5rem 1.75rem;
-  }
-  .rule {
-    position: absolute;
-    inset: 0 0 auto;
-    height: 1px;
-    background: currentColor;
-    transform-origin: left center;
-  }
-  .rule-end { inset: auto 0 0; }
-  .exp-num { font-size: var(--size-label); letter-spacing: 0.12em; }
-  .exp-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(2rem, 0.95rem + 3.3vw, 4.25rem); line-height: 1; }
-  .exp-name span { position: relative; display: inline-block; transition: transform 0.7s var(--ease); }
-  /* the small Ouro dot that appears where the name was */
-  .exp-name span::before {
-    content: '';
-    position: absolute;
-    left: -1.35rem;
-    top: 50%;
-    width: 0.55rem;
-    height: 0.55rem;
-    margin-top: -0.2rem;
-    border-radius: 50%;
-    background: var(--ouro);
-    transform: scale(0);
-    transition: transform 0.5s var(--ease);
-  }
-  .exp-line { max-width: 34ch; }
+  .split-panel > * { max-width: 30rem; }
+  .split-panel .cta { margin-top: 0.15rem; }
+  .partners { margin-top: var(--space); }
   @media (min-width: 48rem) {
-    .exp-row {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      column-gap: var(--col-gap);
-      align-items: baseline;
-      padding-block: clamp(1.6rem, 2.8vw, 2.4rem);
-    }
-    .exp-num { grid-column: 1 / span 1; }
-    .exp-name { grid-column: 2 / span 6; }
-    .exp-line { grid-column: 8 / -1; max-width: none; font-size: 0.95rem; }
-  }
-  @media (hover: hover) and (min-width: 48rem) {
-    .exp-row:hover .exp-name span { transform: translateX(1.9rem); }
-    .exp-row:hover .exp-name span::before { transform: scale(1); }
+    /* two equal halves; when the text is taller than the photo's shape, the photo grows
+       with it (cropped), instead of pushing the text aside */
+    .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .split :global(.photo) { width: 100%; height: 100%; }
+    .split-panel { gap: 0.9rem; padding: 3rem clamp(2rem, 5vw, 4rem); }
   }
 
-  /* 4 · Agenda: on Noite, heading on the left, dates on the right */
-  .agenda-body { margin-top: clamp(2.5rem, 6vw, 4rem); }
-  .events { border-top: 1px solid color-mix(in srgb, var(--linho) 28%, transparent); }
+  /* ── Carousel: two cards at a time on phones, three on wider screens ── */
+  .carousel { position: relative; container-type: inline-size; max-width: 58rem; margin-inline: auto; }
+  .track {
+    --card-gap: 1.125rem;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - var(--card-gap)) / 2);
+    gap: var(--card-gap);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .track::-webkit-scrollbar { display: none; }
+  .track:focus-visible { outline-offset: 6px; }
+  .card { scroll-snap-align: start; text-align: center; }
+  .card-media { position: relative; }
+  .badge {
+    position: absolute;
+    top: 0.6rem;
+    left: 0.6rem;
+    padding: 0.3rem 0.5rem;
+    background: var(--linho);
+    font-size: 0.625rem;
+    line-height: 1.3;
+    font-weight: 600;
+    font-stretch: var(--wide);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .card-name {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    font-weight: 600;
+    font-stretch: var(--wide);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .card-line { margin-top: 0.25rem; padding-inline: 0.25rem; font-size: 0.75rem; color: var(--muted); }
+
+  .pager { display: flex; align-items: center; justify-content: center; margin-top: 1.25rem; }
+  .pager-count {
+    min-width: 3.5rem;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-stretch: var(--wide);
+    letter-spacing: 0.12em;
+  }
+  .pager .icon-button:disabled { visibility: hidden; }
+  :global(html:not(.js)) .pager { display: none; }
+
+  @media (min-width: 48rem) {
+    .track { --card-gap: 1.75rem; grid-auto-columns: calc((100% - 2 * var(--card-gap)) / 3); }
+  }
+  /* Large screens: the arrows sit either side of the photos, the count stays below */
+  @media (min-width: 64rem) {
+    .carousel { max-width: min(58rem, 100% - 7rem); }
+    .pager-prev,
+    .pager-next { position: absolute; top: calc((100cqw - 3.5rem) / 3 * 0.625 - 1.375rem); }
+    .pager-prev { left: -3.5rem; }
+    .pager-next { right: -3.5rem; }
+  }
+
+  /* ── Agenda ── */
+  .agenda-label { text-align: center; margin-bottom: 0.4rem; }
+  .events { border-top: 1px solid var(--line); }
   .event {
     display: grid;
-    grid-template-columns: 5.25rem minmax(0, 1fr);
+    grid-template-columns: 4.25rem minmax(0, 1fr);
     gap: 1rem;
-    padding-block: 1.5rem;
-    border-bottom: 1px solid color-mix(in srgb, var(--linho) 28%, transparent);
+    padding-block: 1.25rem;
+    border-bottom: 1px solid var(--line);
   }
-  .event-date { font-family: var(--font-display); font-size: clamp(2.1rem, 1.6rem + 1.6vw, 3.25rem); line-height: 1; color: var(--ouro); }
-  .event-format { font-family: var(--font-display); font-size: clamp(1.7rem, 1.3rem + 1.2vw, 2.5rem); line-height: 1.05; }
-  .event-ed { font-family: var(--font-black); font-size: var(--size-label); letter-spacing: 0.12em; vertical-align: middle; color: var(--ouro); }
-  .event-note { margin-top: 0.5rem; max-width: 36ch; }
-  .event-meta { display: grid; gap: 0.1rem; margin-top: 0.6rem; font-size: 0.9rem; }
-  .follow { margin-top: 2rem; font-size: 0.95rem; }
-  @media (min-width: 48rem) {
-    .agenda-head { grid-column: 1 / span 6; align-self: start; position: sticky; top: calc(var(--header-h) + 2.5rem); }
-    .agenda-body { grid-column: 7 / -1; margin-top: 0; }
-    .event { grid-template-columns: 7rem minmax(0, 1fr); padding-block: 1.75rem; }
+  .event-date { font-size: 1.125rem; line-height: 1.35; font-weight: 600; font-stretch: var(--wide); }
+  .event-format { font-size: 0.75rem; line-height: 1.6; font-weight: 600; font-stretch: var(--wide); letter-spacing: 0.06em; text-transform: uppercase; }
+  .event-ed { color: var(--muted); }
+  .event-note { margin-top: 0.3rem; }
+  .event-meta { margin-top: 0.3rem; font-size: 0.8125rem; color: var(--muted); }
+  .follow { margin-top: 1.25rem; text-align: center; }
+
+  /* ── Editorial: on phones the photo first, then the text; side by side on wider screens,
+     the photo close to the middle and the text centred in the other half ── */
+  .editorial { display: grid; gap: 1.75rem; }
+  .editorial :global(.ed-media) { order: -1; }
+  .ed-text {
+    display: grid;
+    justify-items: center;
+    gap: 0.7rem;
+    max-width: 26rem;
+    margin-inline: auto;
+    text-align: center;
   }
-
-  /* 5 · Cities: on Areia, one centred line */
-  .cities { padding-block: clamp(7rem, 15vw, 12.5rem); }
-  .cities-inner { display: grid; justify-items: center; text-align: center; }
-  .more { margin-top: clamp(1.75rem, 4vw, 2.5rem); }
-
-  /* 6 · Join: on Sálvia. Large type in Linho, small type in Noite. */
-  .steps { display: grid; gap: 2.25rem; }
-  .step { display: grid; gap: 0.5rem; padding-top: 1.25rem; border-top: 1px solid var(--linho); }
-  .step-num { font-size: 1.6rem; line-height: 1; margin-bottom: 0.9rem; color: var(--linho); }
-  .step-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.9rem, 1.45rem + 1.3vw, 2.75rem); line-height: 1; color: var(--linho); text-wrap: balance; }
-  .step-line { max-width: 30ch; }
-  .join-close { margin-top: clamp(4.5rem, 11vw, 8.5rem); display: grid; gap: 2.25rem; justify-items: start; }
-  .join :global(.join-line) { color: var(--linho); }
-  .join-apply { --circle: 7.5rem; }
-  @media (min-width: 48rem) {
-    .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--col-gap); }
-    .join-close { grid-template-columns: 1fr auto; align-items: end; }
-    .join-apply { --circle: 9.5rem; }
+  .ed-text .cta { margin-top: 0.15rem; }
+  .values {
+    font-size: 0.6875rem;
+    line-height: 1.8;
+    font-weight: 600;
+    font-stretch: var(--wide);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
-
-  /* 7 · Partners: on Linho */
-  .partners-body { margin-top: clamp(3rem, 7vw, 5rem); display: grid; gap: 2rem; justify-items: start; }
-  .types { width: 100%; border-top: 1px solid var(--noite); }
-  .types li { display: grid; gap: 0.25rem; padding-block: 1.1rem; border-bottom: 1px solid var(--noite); }
-  .types .label { margin: 0; }
-  .partners-cta { font-family: var(--font-display); font-size: clamp(1.8rem, 1.4rem + 1.4vw, 2.6rem); line-height: 1.1; }
   @media (min-width: 48rem) {
-    .types li { grid-template-columns: 9rem 1fr; align-items: baseline; }
+    .editorial { grid-template-columns: 1fr 1fr; column-gap: var(--gap); align-items: center; }
+    .editorial :global(.ed-media) { order: 0; width: min(100%, 30.125rem); justify-self: start; }
+    .editorial.is-reverse :global(.ed-media) { order: -1; justify-self: end; }
+    .ed-text { max-width: 23.75rem; }
   }
 
+  /* How to join: three short steps */
+  .steps { display: grid; gap: 1rem; margin-block: 0.35rem; }
+  .steps li { display: grid; gap: 0.15rem; justify-items: center; }
+  .step-num { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; color: var(--muted); }
+  .step-name { font-size: 0.75rem; line-height: 1.5; font-weight: 600; font-stretch: var(--wide); letter-spacing: 0.06em; text-transform: uppercase; }
+  .steps p { color: var(--muted); }
+
+  /* Partners: the three kinds */
+  .types { display: grid; gap: 0.8rem; margin-block: 0.25rem; }
+  .types li { display: grid; gap: 0.1rem; }
+  .type-name { font-size: 0.75rem; line-height: 1.5; font-weight: 600; font-stretch: var(--wide); letter-spacing: 0.06em; text-transform: uppercase; }
+  .types p { color: var(--muted); }
+
+  /* ── Cities: photo tiles with the name below ── */
+  .tiles { display: grid; gap: 2rem var(--gap); }
+  .tile { display: grid; gap: 1rem; justify-items: center; }
+  .tile :global(.photo) { width: 100%; }
+  .more { margin-top: 2rem; text-align: center; color: var(--muted); }
   @media (min-width: 48rem) {
-    .hero-intro { grid-column: 5 / span 4; }
-    .seal { grid-column: 10 / -1; }
+    .tiles { grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
   }
 </style>

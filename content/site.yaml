@@ -9,7 +9,8 @@
 #   - Save the file. Locally the page updates when you refresh the browser.
 #     Online, it updates a minute after you publish the change.
 #
-#  In headings, *one word between stars* is shown in italic.
+#  Links (href): a page of the site, like "/apply/" or "/#join",
+#  or the word instagram for the Instagram page.
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -40,7 +41,7 @@ agenda: []
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  2. CITIES
-#  In order. Shown as one line: Lisbon → London.
+#  In order. Each city gets a photo tile, named after it (lisbon.jpg…).
 # ═════════════════════════════════════════════════════════════════════════════
 cities:
   - Lisbon
@@ -66,7 +67,29 @@ forms:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-#  5. TEXT (English)
+#  5. PHOTOS
+#  One photo per place, in src/assets/photos, named as below: hero.jpg,
+#  table-of-seven.jpg… (.jpg, .png or .webp). Each one is cropped to the shape
+#  of its place, so keep the subject near the middle.
+#  After each name: a short description of the photo, for people who can't see
+#  it. The site won't publish while a photo or its description is missing.
+# ═════════════════════════════════════════════════════════════════════════════
+photos:
+  hero: ""
+  table-of-seven: ""
+  seven-hills-run: ""
+  court-sessions: ""
+  culture-nights: ""
+  off-the-hills: ""
+  circle: ""
+  join: ""
+  partners: ""
+  lisbon: ""
+  london: ""
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  6. TEXT (English)
 #  A Portuguese version can be added later as a copy of this block called "pt:".
 # ═════════════════════════════════════════════════════════════════════════════
 en:
@@ -75,70 +98,82 @@ en:
     description: "A private circle for founders, athletes and creatives, born in Lisbon. Dinners, sport, travel and culture, with people chosen for character."
 
   nav:
+    # The header links, in this order. Agenda only shows while there are dates.
     links:
-      - label: The Circle
-        href: "/#circle"
       - label: Experiences
         href: "/#experiences"
       - label: Agenda
         href: "/#agenda"
+      - label: The Circle
+        href: "/#circle"
+      - label: How to join
+        href: "/#join"
       - label: Partners
         href: "/#partners"
+      - label: Cities
+        href: "/#cities"
     apply: Apply
     menu: Menu
     home: Seven Hills, home
 
-  hero:
-    lines:
-      - "Founders."
-      - "*Athletes.*"
-      - "Creatives."
-    intro:
-      - "A private circle, born in Lisbon."
-      - "Dinners, sport, travel and culture."
-    # The words around the small round seal at the bottom of the hero
-    seal: "Seven Hills · Members Club · Lisbon"
+  # The thin strip under the header. The lines take turns every few seconds.
+  promo:
+    items:
+      - text: "Applications are open."
+        link: Apply
+        href: "/apply/"
+      - text: "New dates are announced first on Instagram."
+        link: "@thehillsmembers"
+        href: instagram
+      - text: "Co-hosted, not sponsored."
+        link: Partner with us
+        href: "/partners/"
+    close: Close this message
 
-  circle:
-    label: The Circle
-    lines:
-      - "Chosen for"
-      - "*character*"
-    text: "We create the context where meaningful relationships happen naturally. Members are chosen for who they are, not for their title."
-    values: "Character · Curiosity · Contribution · Discretion · Shared ambition"
+  hero:
+    label: "Members Club · Lisbon"
+    title: "Founders. Athletes. Creatives."
+    text: "A private circle, born in Lisbon. Dinners, sport, travel and culture."
+    cta: Apply
 
   experiences:
-    label: Experiences
-    lines:
-      - "Five"
-      - "*experiences*"
+    title: Five experiences
+    previous: Previous
+    next: Next
+    # kind: the small tag on each photo
     items:
       - name: Table of Seven
+        kind: Dinner
         line: "A long dinner, a host, one question for the night."
       - name: Seven Hills Run
+        kind: Sport
         line: "Seven hills of Lisbon, early morning."
       - name: Court Sessions
+        kind: Sport
         line: "Padel and tennis, hosted by athlete members."
       - name: Culture Nights
+        kind: Culture
         line: "Art, music and conversation."
       - name: Off the Hills
+        kind: Travel
         line: "Trips to the cities of the circle."
 
   agenda:
     label: Agenda
-    lines:
-      - "What's"
-      - "*on*"
-      - "next?"
+    title: "What's on next?"
     location_note: "Location revealed 48h before."
     follow: "First on Instagram"
 
-  cities:
-    label: Cities
-    more: "More cities to come."
+  circle:
+    label: The Circle
+    title: Chosen for character
+    text: "We create the context where meaningful relationships happen naturally. Members are chosen for who they are, not for their title."
+    values: "Character · Curiosity · Contribution · Discretion · Shared ambition"
+    cta: How to join
 
   join:
     label: How to join
+    title: "We don't look for CVs. Tell us who you are."
     steps:
       - name: Apply
         line: "A short form, in your own words."
@@ -146,16 +181,11 @@ en:
         line: "A coffee or a call. No pitch."
       - name: Welcome
         line: "A letter and a seat at the next table."
-    lines:
-      - "We don't look for CVs."
-      - "Tell us who you *are*."
     cta: Apply
 
   partners:
     label: Partners
-    lines:
-      - "Co-hosted,"
-      - "*not* sponsored."
+    title: "Co-hosted, not sponsored."
     types:
       - name: Hosts
         line: "Restaurants, hotels and clubs that receive the circle."
@@ -165,16 +195,52 @@ en:
         line: "Limited collaborations, designed together."
     cta: Partner with us
 
+  cities:
+    title: Cities
+    more: "More cities to come."
+
+  # Three short notes just above the footer
+  prefooter:
+    - title: Membership
+      text: "A short form, in your own words. We read every application ourselves."
+      link: Apply
+      href: "/apply/"
+    - title: Partners
+      text: "Hosts, experiences and limited product collaborations."
+      link: Partner with us
+      href: "/partners/"
+    - title: Instagram
+      text: "New dates are announced there first."
+      link: "@thehillsmembers"
+      href: instagram
+
   footer:
-    city_label: City
+    columns:
+      - title: Seven Hills
+        links:
+          - label: The Circle
+            href: "/#circle"
+          - label: Experiences
+            href: "/#experiences"
+          - label: Cities
+            href: "/#cities"
+      - title: Membership
+        links:
+          - label: How to join
+            href: "/#join"
+          - label: Apply
+            href: "/apply/"
+      - title: Contact
+        links:
+          - label: Partner with us
+            href: "/partners/"
+          - label: Instagram
+            href: instagram
+      - title: Legal
+        links:
+          - label: Privacy
+            href: "/privacy/"
     city: Lisbon
-    brand_label: Seven Hills
-    about: About
-    contact: Contact
-    legal_label: Legal
-    privacy: Privacy
-    socials_label: Socials
-    instagram: Instagram
 
   apply:
     meta_title: "Apply · Seven Hills"

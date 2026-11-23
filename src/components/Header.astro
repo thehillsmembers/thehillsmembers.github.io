@@ -1,37 +1,77 @@
 ---
-// Sticky header: wordmark left, small nav in two columns, round Ouro Apply button right.
-// On phones the nav folds into a simple "Menu"; the Apply circle stays visible.
-// The Agenda link only shows while there are upcoming dates. data-agenda-until carries the
-// last one, so the motion script can drop the link once that day has passed.
-import { copy, link, upcoming } from '../lib/content';
+// The header, in the manner of a maison's website. It stays at the top of the screen:
+// - a thin Noite line, then a bar with the wordmark in the middle. On phones: the menu and
+//   Instagram on the left, Apply on the right. On wide screens: Instagram and Apply on the right,
+// - on wide screens, a centred row of links underneath, which folds away once the page scrolls,
+// - a strip of short messages that take turns. The cross closes it for the rest of the visit.
+// The Agenda link only shows while there are upcoming dates. data-agenda-until carries the last
+// one, so the script can drop the link once that day has passed.
+import { copy, link, site, to, upcoming } from '../lib/content';
 const t = copy('en');
 const events = upcoming();
-const links = (t.nav.links as { label: string; href: string }[]).filter((l) => events.length > 0 || !l.href.endsWith('#agenda'));
+type Link = { label: string; href: string };
+const links = (t.nav.links as Link[]).filter((l) => events.length > 0 || !l.href.endsWith('#agenda'));
 const agendaUntil = events.length ? events[events.length - 1].date : undefined;
+const promo = (t.promo?.items ?? []) as { text: string; link?: string; href?: string }[];
+const igLabel = `Instagram, ${site.instagramHandle}`;
 ---
 <header class="site-header" data-header data-agenda-until={agendaUntil}>
   <div class="wrap bar">
-    <a href={link('/')} class="home" aria-label={t.nav.home}>
-      <img src={link('/brand/wordmark-noite.png')} alt="" width="150" height="27" />
+    <div class="bar-start">
+      <details class="menu" data-menu>
+        <summary class="icon-button menu-toggle">
+          <span class="visually-hidden">{t.nav.menu}</span>
+          <svg class="i-open" viewBox="0 0 20 20" aria-hidden="true"><path d="M2.5 5.5h15M2.5 10h15M2.5 14.5h15" /></svg>
+          <svg class="i-close" viewBox="0 0 20 20" aria-hidden="true"><path d="m4.5 4.5 11 11m0-11-11 11" /></svg>
+        </summary>
+        <nav class="menu-panel" aria-label="Main">
+          <ul>
+            {links.map((l) => <li><a href={link(l.href)}>{l.label}</a></li>)}
+            <li><a href={link('/apply/')}>{t.nav.apply}</a></li>
+            <li><a href={site.instagramUrl} rel="noopener">Instagram</a></li>
+          </ul>
+        </nav>
+      </details>
+      <a class="icon-button ig ig-phone" href={site.instagramUrl} rel="noopener" aria-label={igLabel}>
+        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.75" y="2.75" width="14.5" height="14.5" rx="4" /><circle cx="10" cy="10" r="3.4" /><circle class="dot" cx="14.5" cy="5.5" r="0.9" /></svg>
+      </a>
+    </div>
+
+    <a class="home" href={link('/')} aria-label={t.nav.home}>
+      <img src={link('/brand/wordmark-noite.png')} alt="" width="176" height="32" />
     </a>
 
-    <nav class="nav" aria-label="Main">
-      <ul style={`--cols:${links.length > 3 ? 2 : links.length}`}>
-        {links.map((l) => <li><a class="link" href={link(l.href)}>{l.label}</a></li>)}
-      </ul>
-    </nav>
-
-    <details class="menu" data-menu>
-      <summary class="menu-toggle">{t.nav.menu}</summary>
-      <nav class="menu-panel" aria-label="Main">
-        <ul>
-          {links.map((l) => <li><a href={link(l.href)}>{l.label}</a></li>)}
-        </ul>
-      </nav>
-    </details>
-
-    <a class="circle-button apply" href={link('/apply/')}>{t.nav.apply}</a>
+    <div class="bar-end">
+      <a class="icon-button ig ig-wide" href={site.instagramUrl} rel="noopener" aria-label={igLabel}>
+        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.75" y="2.75" width="14.5" height="14.5" rx="4" /><circle cx="10" cy="10" r="3.4" /><circle class="dot" cx="14.5" cy="5.5" r="0.9" /></svg>
+      </a>
+      <a class="apply" href={link('/apply/')}>{t.nav.apply}</a>
+    </div>
   </div>
+
+  <nav class="nav-row" aria-label="Main">
+    <ul class="wrap">
+      {links.map((l) => <li><a href={link(l.href)}>{l.label}</a></li>)}
+    </ul>
+  </nav>
+
+  {promo.length > 0 && (
+    <div class="promo" data-promo>
+      <div class="wrap promo-inner">
+        <ul class="promo-list">
+          {promo.map((p, i) => (
+            <li class:list={['promo-item', { 'is-active': i === 0 }]} data-promo-item>
+              {p.text}
+              {p.link && p.href && <a href={to(p.href)}>{p.link}</a>}
+            </li>
+          ))}
+        </ul>
+        <button class="icon-button promo-close" type="button" data-promo-close aria-label={t.promo.close}>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10m0-10L5 15" /></svg>
+        </button>
+      </div>
+    </div>
+  )}
 </header>
 
 <style>
@@ -39,69 +79,147 @@ const agendaUntil = events.length ? events[events.length - 1].date : undefined;
     position: fixed;
     inset: 0 0 auto;
     z-index: 50;
-    height: var(--header-h);
     background: var(--linho);
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.3s ease;
+    border-top: var(--top-h) solid var(--noite);
   }
-  /* After the hero: a thin line under the bar, and the Apply circle fits inside it,
-     so nothing covers the text scrolling underneath */
-  .site-header.is-solid { border-bottom-color: var(--noite); }
+
+  /* ── The bar ── */
   .bar {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-  .home { display: block; padding-block: 0.5rem; margin-right: auto; }
-  .home img { width: 132px; height: auto; }
-
-  .nav { display: none; }
-  .nav ul {
+    height: var(--bar-h);
     display: grid;
-    grid-template-columns: repeat(var(--cols, 2), auto);
-    gap: 0.35rem 3.5rem;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
   }
-  .nav a { font-size: 0.85rem; letter-spacing: 0.02em; }
+  .bar-start { display: flex; align-items: center; margin-left: -0.7rem; }
+  .bar-end { display: flex; align-items: center; justify-content: flex-end; gap: 0.25rem; }
+  .home { display: block; padding: 0.6rem 0.25rem; }
+  .home img { width: 7.5rem; height: auto; }
 
-  /* Apply circle hangs slightly below the bar, like a seal, while the hero is in view */
+  .ig svg .dot { fill: currentColor; stroke: none; }
+  .ig-wide { display: none; }
+
   .apply {
-    --circle: 4.6rem; align-self: flex-start; margin-top: 0.75rem; font-size: 0.62rem;
-    transition: width 0.4s var(--ease), margin-top 0.4s var(--ease), font-size 0.4s var(--ease),
-      color 0.35s ease 0.1s;
+    display: block;
+    padding: 0.85rem 0 0.85rem 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    font-stretch: var(--wide);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
   }
-  .site-header.is-solid .apply { --circle: 4.25rem; margin-top: calc((var(--header-h) - 1px - 4.25rem) / 2); font-size: 0.62rem; }
+  @media (hover: hover) {
+    .apply:hover { text-decoration: underline; text-underline-offset: 0.35em; }
+  }
 
-  /* Phone menu */
-  .menu { position: static; }
-  .menu-toggle {
-    list-style: none;
-    cursor: pointer;
-    padding: 0.75rem 0.25rem;
-    font-size: 0.85rem;
-  }
+  /* ── Phone menu: a panel under the bar, over the page ── */
+  .menu-toggle { list-style: none; }
   .menu-toggle::-webkit-details-marker { display: none; }
-  .menu[open] .menu-toggle { text-decoration: underline; text-underline-offset: 0.25em; }
+  .i-close,
+  .menu[open] .i-open { display: none; }
+  .menu[open] .i-close { display: block; }
   .menu-panel {
-    position: absolute;
-    inset: var(--header-h) 0 auto;
+    position: fixed;
+    inset: calc(var(--top-h) + var(--bar-h)) 0 0;
+    z-index: 2;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     background: var(--linho);
-    border-bottom: 1px solid var(--noite);
-    padding: 1rem var(--gutter) 2rem;
+    border-top: 1px solid var(--line);
+    padding: 0.5rem var(--gutter) calc(2.5rem + env(safe-area-inset-bottom));
   }
   .menu-panel a {
     display: block;
-    padding-block: 0.35rem;
-    font-family: var(--font-display);
-    font-size: 2.6rem;
-    line-height: 1.05;
+    padding-block: 1.1rem;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-stretch: var(--wide);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     text-decoration: none;
   }
 
-  @media (min-width: 56rem) {
-    .home img { width: 168px; }
-    .nav { display: block; margin-right: auto; }
-    .menu { display: none; }
-    .apply { --circle: 7rem; margin-top: 1rem; font-size: var(--size-label); }
+  /* ── The row of links (wide screens) ── */
+  .nav-row { display: none; }
+
+  /* ── The message strip ── */
+  .promo { background: var(--panel); }
+  .promo-inner {
+    height: var(--promo-h);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .promo-list { display: grid; }
+  .promo-item {
+    grid-area: 1 / 1;
+    align-self: center;
+    font-size: 0.6875rem;
+    line-height: 1.45;
+    color: var(--muted);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0s linear 0.6s;
+  }
+  .promo-item.is-active { opacity: 1; visibility: visible; transition: opacity 0.6s ease 0.2s, visibility 0s; }
+  .promo-item a {
+    margin-left: 0.35rem;
+    color: var(--noite);
+    font-weight: 600;
+    font-stretch: var(--wide);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-underline-offset: 0.3em;
+    white-space: nowrap;
+  }
+  .promo-close { margin-right: -0.7rem; }
+  :global(:root.promo-closed) .promo { display: none; }
+  :global(html:not(.js)) .promo-close { display: none; }
+
+  @media (min-width: 64rem) {
+    .bar-start { margin-left: 0; }
+    .menu,
+    .ig-phone { display: none; }
+    .ig-wide { display: inline-grid; }
+    .home img { width: 11rem; }
+
+    .nav-row {
+      display: block;
+      height: var(--nav-h);
+      overflow: hidden;
+      transition: height 0.45s var(--ease), visibility 0s;
+    }
+    .nav-row ul {
+      height: var(--nav-h);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(1.75rem, 3vw, 3rem);
+    }
+    .nav-row a {
+      display: block;
+      padding-block: 0.8rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-stretch: var(--wide);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      background: linear-gradient(currentColor, currentColor) no-repeat 50% calc(100% - 0.55rem) / 0 1px;
+      transition: background-size 0.35s var(--ease);
+    }
+    .nav-row a:hover,
+    .nav-row a:focus-visible { background-size: 100% 1px; }
+    /* once the page scrolls, only the bar and the strip stay */
+    .site-header.is-folded .nav-row {
+      height: 0;
+      visibility: hidden;
+      transition: height 0.45s var(--ease), visibility 0s linear 0.45s;
+    }
+
+    .promo-item { font-size: 0.8125rem; text-align: center; }
+    .promo-list { padding-left: 2.75rem; }
   }
 </style>

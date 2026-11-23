@@ -1,4 +1,4 @@
-// Reads content/site.yaml (all text, dates, cities, form addresses).
+// Reads content/site.yaml (all text, dates, cities, photo descriptions, form addresses).
 // Nothing here needs editing to change the site's content.
 import { parse } from 'yaml';
 import raw from '../../content/site.yaml?raw';
@@ -17,6 +17,8 @@ export const site = {
   cities: (data.cities ?? []) as string[],
   /** Formspree addresses for the forms. Empty = use Netlify Forms. */
   forms: { apply: (data.forms?.apply ?? '') as string, partners: (data.forms?.partners ?? '') as string },
+  /** The photo places, in page order, each with the description of its photo. */
+  photos: (data.photos ?? {}) as Record<string, string>,
 };
 
 // ── Agenda ────────────────────────────────────────────────
@@ -61,8 +63,17 @@ export function link(path: string): string {
   return path.startsWith('/') ? BASE + path.slice(1) : path;
 }
 
-/** Escapes text and turns *one word* into <em>one word</em> for the serif italic. */
-export function rich(text: string): string {
-  const safe = String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  return safe.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+/** A link written in the YAML: a page of the site ("/apply/"), or the word instagram. */
+export function to(href: string): string {
+  return href === 'instagram' ? site.instagramUrl : link(href);
+}
+
+/** "Table of Seven" → "table-of-seven": the file name of a photo. */
+export function slug(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }

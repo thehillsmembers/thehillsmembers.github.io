@@ -8,4 +8,6 @@ export default defineConfig({
   site: process.env.SITE_URL || process.env.URL || 'http://localhost:4321',
   base: process.env.BASE_PATH || '/',
   build: { inlineStylesheets: 'always' },
+  // The preview (npm run dev) shows the page exactly as it will look, without Astro's toolbar
+  devToolbar: { enabled: false },
 });

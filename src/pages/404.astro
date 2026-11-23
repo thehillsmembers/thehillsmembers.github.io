@@ -1,24 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
-import Heading from '../components/Heading.astro';
 import { copy, link } from '../lib/content';
 const n = copy('en').not_found;
 ---
 <Base title={n.meta_title} noindex>
   <section class="page">
-    <div class="wrap grid">
+    <div class="wrap thanks">
       <p class="label">{n.label}</p>
-      <Heading as="h1" lines={['Wrong', '*hill*']} />
-      <div class="right lost-body">
-        <p class="intro">{n.line}</p>
-        <a class="link is-underlined back" href={link('/')}>{n.cta}</a>
-      </div>
+      <h1 class="page-title">{n.title}</h1>
+      <p>{n.line}</p>
+      <a class="cta" href={link('/')}>{n.cta}</a>
     </div>
   </section>
 </Base>
-
-<style>
-  .label { margin-bottom: 1.5rem; }
-  .lost-body { margin-top: clamp(2.5rem, 6vw, 4rem); display: grid; gap: 1.5rem; justify-items: start; }
-  .back { font-family: var(--font-display); font-size: 2rem; line-height: 1.1; }
-</style>
