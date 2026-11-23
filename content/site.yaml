@@ -261,7 +261,7 @@ en:
     meta_description: "How Seven Hills handles the details you send through the application and partner forms."
     label: Privacy
     title: Privacy notice
-    updated: "Last updated: 22.11.2026"
+    updated: "Last updated: 23.11.2026"
     sections:
       - heading: Who we are
         body:
@@ -279,7 +279,9 @@ en:
           - "We never sell your data and never share it with partners or other members."
       - heading: Who processes it
         body:
-          - "Form submissions are stored by Netlify, Inc., which hosts this site. Netlify may process data outside the EU under the European Commission's Standard Contractual Clauses."
+          - "This site is hosted on GitHub Pages by GitHub, Inc., which keeps logs of visitors' IP addresses to keep its service secure."
+          - "What you send through the forms is received and stored by Formspree, Inc., which forwards it to our email inbox, run by Google (Gmail)."
+          - "These companies are based in the United States, so your data may be processed outside the EU, under each provider's own data protection terms."
       - heading: How long we keep it
         body:
           - "Applications and proposals that do not go ahead are deleted within 12 months of our reply."
