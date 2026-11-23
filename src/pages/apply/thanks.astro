@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro';
+import { copy, link } from '../../lib/content';
+const a = copy('en').apply;
+---
+<Base title={`${a.thanks_title} · Seven Hills`} noindex>
+  <section class="page">
+    <div class="wrap thanks">
+      <p class="label">{a.label}</p>
+      <h1 class="page-title">{a.thanks_title}</h1>
+      <p>{a.thanks}</p>
+      <a class="link is-underlined" href={link('/')}>{a.back}</a>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,93 @@
+---
+// Sticky header: wordmark left, small nav in two columns, round Ouro Apply button right.
+// On phones the nav folds into a simple "Menu"; the Apply circle stays visible.
+import { copy, link } from '../lib/content';
+const t = copy('en');
+const links: { label: string; href: string }[] = t.nav.links;
+---
+<header class="site-header" data-header>
+  <div class="wrap bar">
+    <a href={link('/')} class="home" aria-label={t.nav.home}>
+      <img src={link('/brand/wordmark-noite.png')} alt="" width="150" height="27" />
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <ul>
+        {links.map((l) => <li><a class="link" href={link(l.href)}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <details class="menu" data-menu>
+      <summary class="menu-toggle">{t.nav.menu}</summary>
+      <nav class="menu-panel" aria-label="Main">
+        <ul>
+          {links.map((l) => <li><a href={link(l.href)}>{l.label}</a></li>)}
+        </ul>
+      </nav>
+    </details>
+
+    <a class="circle-button apply" href={link('/apply/')}>{t.nav.apply}</a>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    height: var(--header-h);
+    background: var(--linho);
+  }
+  .bar {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .home { display: block; padding-block: 0.5rem; margin-right: auto; }
+  .home img { width: 132px; height: auto; }
+
+  .nav { display: none; }
+  .nav ul {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 0.35rem 3.5rem;
+  }
+  .nav a { font-size: 0.85rem; letter-spacing: 0.02em; }
+
+  /* Apply circle hangs slightly below the bar, like a seal */
+  .apply { --circle: 4.6rem; align-self: flex-start; margin-top: 0.75rem; font-size: 0.62rem; }
+
+  /* Phone menu */
+  .menu { position: static; }
+  .menu-toggle {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.75rem 0.25rem;
+    font-size: 0.85rem;
+  }
+  .menu-toggle::-webkit-details-marker { display: none; }
+  .menu[open] .menu-toggle { text-decoration: underline; text-underline-offset: 0.25em; }
+  .menu-panel {
+    position: absolute;
+    inset: var(--header-h) 0 auto;
+    background: var(--linho);
+    border-bottom: 1px solid var(--noite);
+    padding: 1rem var(--gutter) 2rem;
+  }
+  .menu-panel a {
+    display: block;
+    padding-block: 0.35rem;
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    line-height: 1.05;
+    text-decoration: none;
+  }
+
+  @media (min-width: 56rem) {
+    .home img { width: 168px; }
+    .nav { display: block; margin-right: auto; }
+    .menu { display: none; }
+    .apply { --circle: 7rem; margin-top: 1rem; font-size: var(--size-label); }
+  }
+</style>

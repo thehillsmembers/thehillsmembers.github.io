@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import { copy } from '../lib/content';
+const p = copy('en').privacy;
+---
+<Base title={p.meta_title} description={p.meta_description}>
+  <section class="page">
+    <div class="wrap">
+      <div class="page-head">
+        <p class="label">{p.label}</p>
+        <h1 class="page-title">{p.title}</h1>
+        <p class="hint">{p.updated}</p>
+      </div>
+      <div class="policy">
+        {p.sections.map((s: { heading: string; body: string[] }) => (
+          <section>
+            <h2 class="label">{s.heading}</h2>
+            {s.body.map((para) => <p>{para}</p>)}
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .policy { display: grid; gap: 2.5rem; max-width: 42rem; }
+  .policy section { display: grid; gap: 0.85rem; padding-top: 1.25rem; border-top: 1px solid var(--noite); }
+</style>

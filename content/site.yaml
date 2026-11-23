@@ -1,0 +1,291 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  SEVEN HILLS · SITE CONTENT
+#  This is the only file you need to edit for text, dates and cities.
+#
+#  Simple rules:
+#   - Keep the spaces at the start of each line exactly as they are.
+#   - Text with a colon ( : ) or that starts with a quote must stay inside "quotes".
+#   - Lines starting with # are notes. The site ignores them.
+#   - Save the file. Locally the page updates when you refresh the browser.
+#     Online, it updates a minute after you publish the change.
+#
+#  PHOTOS don't go here. Drop the files in public/images/ with these names and
+#  the site picks them up by itself. A photo that isn't there is simply not shown.
+#    hero.jpg                       big photo under the hero intro
+#    experiences/table-of-seven.jpg  (and the other four, names below)
+#    agenda-1.jpg, agenda-2.jpg      the two photos next to the agenda
+#
+#  In headings, *one word between stars* is shown in italic.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  1. AGENDA
+#  One block per event. Past dates disappear by themselves the next time the
+#  site is published. If the list is empty, the site shows "New dates soon."
+#
+#  date:     year-month-day, in quotes. Shown as 07.03, with the weekday.
+#  format:   one of the five experience names
+#  city:     as you want it written (Lisboa, London…)
+#  edition:  optional. Shown as Nº 12.
+#  time:     optional. Shown as 20H30.
+#  note:     optional. One short line, like the printed invite.
+#
+#  Example (remove the # at the start of each line to use it):
+#
+#  - date: "2027-03-11"
+#    format: Table of Seven
+#    city: Lisboa
+#    edition: 1
+#    time: "20:30"
+#    note: "Fourteen seats, one question."
+# ═════════════════════════════════════════════════════════════════════════════
+agenda: []
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  2. CITIES
+#  In order. Drawn along the seven-dot line, first to last.
+# ═════════════════════════════════════════════════════════════════════════════
+cities:
+  - Lisboa
+  - London
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  3. CONTACTS
+# ═════════════════════════════════════════════════════════════════════════════
+instagram_handle: "@thehillsmembers"
+instagram_url: "https://instagram.com/thehillsmembers"
+contact_email: "thehillsmembers@gmail.com"
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  4. FORMS
+#  Paste the Formspree address of each form here, in quotes,
+#  e.g. "https://formspree.io/f/abcdwxyz". Leave empty on Netlify.
+# ═════════════════════════════════════════════════════════════════════════════
+forms:
+  apply: ""
+  partners: ""
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  5. TEXT (English)
+#  A Portuguese version can be added later as a copy of this block called "pt:".
+# ═════════════════════════════════════════════════════════════════════════════
+en:
+  meta:
+    title: "Seven Hills · Members Club"
+    description: "A private circle for founders, athletes and creatives, born in Lisboa. Dinners, sport, travel and culture, with people chosen for character."
+
+  nav:
+    links:
+      - label: The Circle
+        href: "/#circle"
+      - label: Experiences
+        href: "/#experiences"
+      - label: Agenda
+        href: "/#agenda"
+      - label: Partners
+        href: "/#partners"
+    apply: Apply
+    menu: Menu
+    home: Seven Hills, home
+
+  hero:
+    lines:
+      - "Founders."
+      - "*Athletes.*"
+      - "Creatives."
+    intro:
+      - "A private circle, born in Lisboa."
+      - "Founders, athletes and creatives, chosen for character. Dinners, sport, travel and culture are the setting."
+    image: hero.jpg
+    alt: "A long table on a Lisboa terrace in late afternoon light."
+
+  circle:
+    label: The Circle
+    lines:
+      - "Chosen for"
+      - "*character*"
+    text: "We create the context where meaningful relationships happen naturally. Members are chosen for who they are, not for their title."
+    values: "Character · Curiosity · Contribution · Discretion · Shared ambition"
+
+  experiences:
+    label: Experiences
+    lines:
+      - "Five"
+      - "*experiences*"
+    previous: Previous experience
+    next: Next experience
+    items:
+      - name: Table of Seven
+        line: "A long dinner, a host, one question for the night."
+        image: experiences/table-of-seven.jpg
+        alt: "A dinner table set before the guests arrive."
+      - name: Seven Hills Run
+        line: "Seven hills of Lisboa, early morning."
+        image: experiences/seven-hills-run.jpg
+        alt: "Runners seen from behind on a Lisboa hill."
+      - name: Court Sessions
+        line: "Padel and tennis, hosted by athlete members."
+        image: experiences/court-sessions.jpg
+        alt: "A padel racket and ball on the court line."
+      - name: Culture Nights
+        line: "Art, music and conversation."
+        image: experiences/culture-nights.jpg
+        alt: "People listening in a small room with warm lamps."
+      - name: Off the Hills
+        line: "Trips to the cities of the circle."
+        image: experiences/off-the-hills.jpg
+        alt: "A view from a window on the road."
+
+  agenda:
+    label: Agenda
+    lines:
+      - "What's"
+      - "*on*"
+      - "next?"
+    location_note: "Location revealed 48h before."
+    empty: "New dates soon."
+    follow: "First on Instagram"
+    images:
+      - file: agenda-1.jpg
+        alt: "Candles and glasses on a set table."
+      - file: agenda-2.jpg
+        alt: "A quiet corner by a window, a chair and a small table."
+
+  cities:
+    label: Cities
+    more: "More cities to come."
+
+  join:
+    label: How to join
+    steps:
+      - name: Apply
+        line: "A short form, in your own words."
+      - name: A conversation with the founder
+        line: "A coffee or a call. No pitch."
+      - name: Welcome
+        line: "A letter and a seat at the next table."
+    lines:
+      - "We don't look for CVs."
+      - "Tell us who you *are*."
+    cta: Apply
+
+  partners:
+    label: Partners
+    lines:
+      - "Co-hosted,"
+      - "*not* sponsored."
+    types:
+      - name: Hosts
+        line: "Restaurants, hotels and clubs that receive the circle."
+      - name: Experiences
+        line: "Sport, wellness and premium drinks."
+      - name: Product
+        line: "Limited collaborations, designed together."
+    cta: Partner with us
+
+  footer:
+    city_label: City
+    city: Lisboa
+    brand_label: Seven Hills
+    about: About
+    legal_label: Legal
+    privacy: Privacy
+    socials_label: Socials
+    instagram: Instagram
+
+  apply:
+    meta_title: "Apply · Seven Hills"
+    meta_description: "Apply to join Seven Hills, a private circle for founders, athletes and creatives, born in Lisboa."
+    label: Apply
+    title: Tell us who you are
+    intro: "We don't look for CVs. Write as you would at the table."
+    required_note: "Fields marked * are required."
+    fields:
+      name: Full name
+      email: Email
+      city: City
+      social: Instagram or LinkedIn
+      social_hint: "A handle or a link."
+      what: What do you do
+      what_hint: "One line."
+      who: Tell us who you are
+      bring: What would you bring to the table?
+      referred: Referred by a member?
+      referred_hint: "Optional. Their name."
+      experiences: Experiences you're drawn to
+      consent_before: "I agree that Seven Hills keeps the details above to review my application, as described in the"
+      consent_link: privacy notice
+    submit: Send application
+    thanks_title: Thank you
+    thanks: "Thank you. We read every application ourselves and will be in touch."
+    back: Back to Seven Hills
+
+  partner_form:
+    meta_title: "Partner with us · Seven Hills"
+    meta_description: "Co-host an experience with Seven Hills. Hosts, experiences and limited product collaborations."
+    label: Partners
+    title: Partner with us
+    intro: "Co-hosted, not sponsored. Tell us what you would like to build together."
+    required_note: "Fields marked * are required."
+    fields:
+      name: Name
+      company: Brand or company
+      email: Email
+      type: Partnership type
+      type_options:
+        - Host
+        - Experience
+        - Product
+      idea: What would you like to co-host?
+      consent_before: "I agree that Seven Hills keeps the details above to reply to this proposal, as described in the"
+      consent_link: privacy notice
+    submit: Send proposal
+    thanks_title: Thank you
+    thanks: "Thank you. We read every proposal ourselves and will be in touch."
+    back: Back to Seven Hills
+
+  not_found:
+    meta_title: "Wrong hill · Seven Hills"
+    label: "404"
+    title: Wrong hill
+    line: "This page doesn't exist, or it has moved. The way back is short."
+    cta: Back to Seven Hills
+
+  privacy:
+    meta_title: "Privacy · Seven Hills"
+    meta_description: "How Seven Hills handles the details you send through the application and partner forms."
+    label: Privacy
+    title: Privacy notice
+    updated: "Last updated: 22.11.2026"
+    sections:
+      - heading: Who we are
+        body:
+          - "The controller of your data is [CONTROLLER NAME — person or company], Lisboa, Portugal."
+          - "Contact for anything about your data: thehillsmembers@gmail.com."
+      - heading: What we collect
+        body:
+          - "Application form: full name, email, city, Instagram or LinkedIn, what you do, your answers about who you are and what you would bring, the name of a referring member if you give one, and the experiences you are drawn to."
+          - "Partner form: name, brand or company, email, partnership type and your proposal."
+          - "We collect nothing else. This site uses no cookies, no analytics and no tracking. Fonts are served from this site, not from third parties."
+      - heading: Why we use it
+        body:
+          - "To read your application or proposal, to contact you about it and, if it goes ahead, to welcome you as a member or partner."
+          - "The legal basis is your consent, given with the checkbox on each form, and the steps you ask us to take before any agreement."
+          - "We never sell your data and never share it with partners or other members."
+      - heading: Who processes it
+        body:
+          - "Form submissions are stored by Netlify, Inc., which hosts this site. Netlify may process data outside the EU under the European Commission's Standard Contractual Clauses."
+      - heading: How long we keep it
+        body:
+          - "Applications and proposals that do not go ahead are deleted within 12 months of our reply."
+          - "If you become a member or partner, we keep your details for as long as that relationship lasts, and delete them within 12 months after it ends."
+      - heading: Your rights
+        body:
+          - "You can ask to see, correct or delete your data, to limit or object to how we use it, or to receive a copy. You can withdraw consent at any time; this does not affect what was done before."
+          - "To ask for any of this, including deletion, write to thehillsmembers@gmail.com. We reply within 30 days."
+          - "You can also complain to the Portuguese data protection authority, CNPD (cnpd.pt)."

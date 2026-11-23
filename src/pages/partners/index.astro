@@ -1,0 +1,62 @@
+---
+import Base from '../../layouts/Base.astro';
+import { copy, site, link } from '../../lib/content';
+const p = copy('en').partner_form;
+const f = p.fields;
+const endpoint = site.forms.partners;
+const thanks = link('/partners/thanks/');
+// Formspree when its address is set in content/site.yaml, otherwise Netlify Forms.
+const formAttrs = endpoint
+  ? { action: endpoint, 'data-formspree': '', 'data-thanks': thanks }
+  : { action: thanks, 'data-netlify': 'true', 'netlify-honeypot': 'bot-field' };
+const trap = endpoint ? '_gotcha' : 'bot-field';
+---
+<Base title={p.meta_title} description={p.meta_description}>
+  <section class="page">
+    <div class="wrap">
+      <div class="page-head">
+        <p class="label">{p.label}</p>
+        <h1 class="page-title">{p.title}</h1>
+        <p>{p.intro}</p>
+        <p class="hint">{p.required_note}</p>
+      </div>
+
+      <!-- Submissions go to Formspree (if set in content/site.yaml) or Netlify Forms -->
+      <form class="form" name="partners" method="POST" {...formAttrs}>
+        {endpoint ? <input type="hidden" name="_subject" value="New partner proposal · Seven Hills" /> : <input type="hidden" name="form-name" value="partners" />}
+        <p class="honeypot" aria-hidden="true"><label>Leave this empty <input name={trap} tabindex="-1" autocomplete="off" /></label></p>
+
+        <div class="field">
+          <label for="name">{f.name} *</label>
+          <input id="name" name="name" type="text" autocomplete="name" required />
+        </div>
+        <div class="field">
+          <label for="company">{f.company} *</label>
+          <input id="company" name="company" type="text" autocomplete="organization" required />
+        </div>
+        <div class="field">
+          <label for="email">{f.email} *</label>
+          <input id="email" name="email" type="email" autocomplete="email" required />
+        </div>
+        <fieldset class="field">
+          <legend>{f.type} *</legend>
+          <div class="choices">
+            {f.type_options.map((o: string) => (
+              <label class="choice"><input type="radio" name="partnership_type" value={o} required /> <span>{o}</span></label>
+            ))}
+          </div>
+        </fieldset>
+        <div class="field">
+          <label for="idea">{f.idea} *</label>
+          <textarea id="idea" name="what_to_cohost" rows="6" required></textarea>
+        </div>
+        <label class="choice consent">
+          <input type="checkbox" name="consent" value="yes" required />
+          <span>{f.consent_before} <a href={link('/privacy/')}>{f.consent_link}</a>. *</span>
+        </label>
+        <p class="form-error" data-form-error hidden>Something went wrong. Please try again, or write to us by email.</p>
+        <button class="button" type="submit">{p.submit}</button>
+      </form>
+    </div>
+  </section>
+</Base>

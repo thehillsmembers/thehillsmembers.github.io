@@ -1,0 +1,247 @@
+/* Seven Hills · global styles.
+   Light and editorial: Linho everywhere, Noite text, lots of space,
+   Instrument Serif for display, Archivo for text, Archivo Black for labels and numbers. */
+
+:root {
+  /* Palette */
+  --linho: #f5eee2;  /* background everywhere — never pure white */
+  --noite: #161513;  /* text */
+  --ouro: #eaa83d;   /* the Apply circle, key moments */
+  --areia: #f2d9a8;  /* surfaces */
+  --salvia: #6f8a6a; /* the hero heading, calm accents */
+  --poente: #f0612e; /* form buttons */
+  --lima: #d7f04b;   /* only the seven dots */
+
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-black: 'Archivo Black', 'Arial Black', system-ui, sans-serif;
+
+  --size-label: 0.7rem;
+  --size-intro: 0.8rem;
+  --size-body: clamp(1rem, 0.96rem + 0.2vw, 1.1rem);
+  --size-display: clamp(4.25rem, 1.2rem + 13vw, 13.75rem);   /* ~68 → 220px */
+  --size-display-2: clamp(3.4rem, 1rem + 9vw, 9.5rem);        /* second-level headings */
+
+  --gutter: clamp(1.25rem, 3vw, 2.5rem);
+  --col-gap: clamp(1rem, 2vw, 2rem);
+  --section: clamp(6rem, 14vw, 12rem);
+  --header-h: 5rem;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: clip;
+  background: var(--linho);
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+  background: var(--linho);
+  color: var(--noite);
+  font-family: var(--font-body);
+  font-size: var(--size-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; height: auto; }
+
+h1, h2, h3, p, ol, ul, figure { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
+
+/* ── Type ──────────────────────────────────────────────── */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--size-display);
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+}
+.display-2 { font-size: var(--size-display-2); line-height: 0.9; }
+.display em { font-style: italic; }
+
+/* each line of a big heading: the motion script slides it up from below */
+.line { display: block; overflow: hidden; padding-bottom: 0.09em; margin-bottom: -0.09em; }
+.line > span { display: block; }
+
+.label {
+  font-family: var(--font-black);
+  font-weight: 400;
+  font-size: var(--size-label);
+  line-height: 1.3;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* intro blocks: small uppercase Archivo */
+.intro {
+  font-size: var(--size-intro);
+  line-height: 1.65;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  max-width: 36ch;
+}
+.intro + .intro { margin-top: 1.25em; }
+
+.num { font-family: var(--font-black); font-weight: 400; }
+
+/* ── Layout: an asymmetric 12-column grid ─────────────── */
+
+.wrap { width: 100%; padding-inline: var(--gutter); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+}
+.grid > * { grid-column: 1 / -1; }
+
+/* on phones, "right half" blocks keep a small left indent for the asymmetry */
+.right { grid-column: 3 / -1 !important; }
+@media (min-width: 48rem) {
+  .right { grid-column: 7 / -1 !important; }
+  .right-wide { grid-column: 5 / -1 !important; }
+  .right-narrow { grid-column: 7 / span 4 !important; }
+}
+
+.section { padding-block: var(--section) 0; }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+/* ── Links and buttons ────────────────────────────────── */
+
+a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+
+/* underline that draws in on hover */
+.link {
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px;
+  transition: background-size 0.45s var(--ease);
+  padding-bottom: 0.1em;
+}
+.link:hover, .link:focus-visible { background-size: 100% 1px; }
+.link.is-underlined { background-size: 100% 1px; }
+.link.is-underlined:hover { animation: redraw 0.6s var(--ease); }
+@keyframes redraw { from { background-size: 0 1px; } to { background-size: 100% 1px; } }
+
+/* The round Ouro Apply button */
+.circle-button {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--circle, 7.5rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--ouro);
+  color: var(--noite);
+  font: 600 var(--size-label) / 1 var(--font-body);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 0.5s var(--ease), background-color 0.3s ease, color 0.3s ease;
+}
+.circle-button:hover { transform: scale(1.06); background: var(--noite); color: var(--ouro); }
+
+/* Rectangular button, used on the forms */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  padding: 0.95rem 2.1rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--poente);
+  color: var(--noite);
+  font: 600 var(--size-label) / 1 var(--font-body);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.button:hover { background: var(--noite); color: var(--linho); }
+
+/* Visible focus everywhere */
+:focus-visible { outline: 2px solid var(--noite); outline-offset: 4px; }
+
+.skip-link {
+  position: absolute;
+  left: 1rem; top: -4rem;
+  z-index: 200;
+  padding: 0.75rem 1rem;
+  background: var(--noite);
+  color: var(--linho);
+}
+.skip-link:focus { top: 1rem; }
+
+/* ── Inner pages ──────────────────────────────────────── */
+
+.page { padding-top: calc(var(--header-h) + clamp(3rem, 8vw, 6rem)); }
+.page-head { display: grid; gap: 1.25rem; max-width: 52rem; margin-bottom: clamp(2.5rem, 6vw, 4rem); }
+.page-title { font-family: var(--font-display); font-weight: 400; font-size: var(--size-display-2); line-height: 0.9; letter-spacing: -0.02em; }
+.page-title em { font-style: italic; }
+
+/* ── Forms ────────────────────────────────────────────── */
+
+.form { display: grid; gap: 1.75rem; max-width: 40rem; }
+.field { display: grid; gap: 0.5rem; }
+.field > label,
+.field > legend { font-weight: 600; }
+.hint { font-size: 0.9rem; opacity: 0.78; margin-top: -0.25rem; }
+
+.form input[type="text"],
+.form input[type="email"],
+.form textarea {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--noite);
+  border-radius: 0;
+  background: transparent;
+  color: var(--noite);
+  font: inherit;
+  transition: background-color 0.25s ease;
+}
+.form textarea { min-height: 9rem; resize: vertical; line-height: 1.5; }
+.form input:focus-visible,
+.form textarea:focus-visible { outline-offset: 2px; background: color-mix(in srgb, var(--areia) 40%, transparent); }
+.form input:user-invalid,
+.form textarea:user-invalid { border-color: var(--poente); border-width: 2px; }
+
+fieldset.field { border: 0; padding: 0; margin: 0; min-width: 0; }
+fieldset.field legend { padding: 0; margin-bottom: 0.5rem; }
+.choices { display: grid; gap: 0.25rem; }
+.choice { display: flex; align-items: flex-start; gap: 0.75rem; padding-block: 0.55rem; cursor: pointer; }
+.choice input { width: 1.25rem; height: 1.25rem; margin: 0.15rem 0 0; flex: none; accent-color: var(--noite); }
+.consent { font-size: 0.95rem; }
+.form .button { justify-self: start; margin-top: 0.5rem; }
+.honeypot { display: none; }
+.form-error { color: var(--noite); font-weight: 600; border-left: 3px solid var(--poente); padding-left: 0.75rem; }
+
+.thanks { display: grid; gap: 1.75rem; justify-items: start; max-width: 44rem; }
+.thanks .link { padding-block: 0.5rem; }
+
+/* ── Reduced motion: everything still ─────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
