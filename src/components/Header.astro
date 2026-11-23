@@ -37,7 +37,12 @@ const links: { label: string; href: string }[] = t.nav.links;
     z-index: 50;
     height: var(--header-h);
     background: var(--linho);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease;
   }
+  /* After the hero: a thin line under the bar, and the Apply circle fits inside it,
+     so nothing covers the text scrolling underneath */
+  .site-header.is-solid { border-bottom-color: var(--noite); }
   .bar {
     height: 100%;
     display: flex;
@@ -55,8 +60,13 @@ const links: { label: string; href: string }[] = t.nav.links;
   }
   .nav a { font-size: 0.85rem; letter-spacing: 0.02em; }
 
-  /* Apply circle hangs slightly below the bar, like a seal */
-  .apply { --circle: 4.6rem; align-self: flex-start; margin-top: 0.75rem; font-size: 0.62rem; }
+  /* Apply circle hangs slightly below the bar, like a seal, while the hero is in view */
+  .apply {
+    --circle: 4.6rem; align-self: flex-start; margin-top: 0.75rem; font-size: 0.62rem;
+    transition: width 0.4s var(--ease), margin-top 0.4s var(--ease), font-size 0.4s var(--ease),
+      transform 0.5s var(--ease), background-color 0.3s ease, color 0.3s ease;
+  }
+  .site-header.is-solid .apply { --circle: 4.25rem; margin-top: calc((var(--header-h) - 1px - 4.25rem) / 2); font-size: 0.62rem; }
 
   /* Phone menu */
   .menu { position: static; }

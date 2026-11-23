@@ -14,6 +14,20 @@ const menu = document.querySelector<HTMLDetailsElement>('[data-menu]');
 menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => (menu.open = false)));
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menu?.open) menu.open = false; });
 
+// ── Header: once the hero has scrolled away (on pages without one, as soon as the page
+//    scrolls) it gets its thin bottom line and the Apply circle moves inside the bar ──
+const header = document.querySelector<HTMLElement>('[data-header]');
+if (header) {
+  const hero = document.querySelector<HTMLElement>('.hero');
+  const update = () => {
+    const past = hero ? hero.getBoundingClientRect().bottom <= header.offsetHeight : window.scrollY > 0;
+    header.classList.toggle('is-solid', past);
+  };
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+}
+
 // ── Formspree forms: send in the background, then show our own thank-you page ──
 // (Without JavaScript the form still posts to Formspree, which shows its own confirmation.)
 // Ticked boxes that share a name (experiences[]) are sent as one readable line: "A, B".
