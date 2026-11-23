@@ -266,7 +266,7 @@ en:
     sections:
       - heading: Who we are
         body:
-          - "The controller of your data is [CONTROLLER NAME — person or company], Lisboa, Portugal."
+          - "The controller of your data is André Carvalho, Lisboa, Portugal."
           - "Contact for anything about your data: thehillsmembers@gmail.com."
       - heading: What we collect
         body:
