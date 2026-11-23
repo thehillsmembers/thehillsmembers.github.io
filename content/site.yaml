@@ -62,12 +62,13 @@ contact_email: "thehillsmembers@gmail.com"
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  4. FORMS
-#  Paste the Formspree address of each form here, in quotes,
-#  e.g. "https://formspree.io/f/abcdwxyz". Leave empty on Netlify.
+#  The Formspree address of each form. Answers arrive by email at
+#  thehillsmembers@gmail.com and are listed at formspree.io (sign in with it).
+#  (Left empty, the forms switch to Netlify Forms: only useful on Netlify.)
 # ═════════════════════════════════════════════════════════════════════════════
 forms:
-  apply: ""
-  partners: ""
+  apply: "https://formspree.io/f/moedpvga"
+  partners: "https://formspree.io/f/xkjrpgdo"
 
 
 # ═════════════════════════════════════════════════════════════════════════════
