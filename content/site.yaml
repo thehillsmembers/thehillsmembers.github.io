@@ -21,7 +21,7 @@
 #
 #  date:     year-month-day, in quotes. Shown as 07.03, with the weekday.
 #  format:   one of the five experience names
-#  city:     as you want it written (Lisboa, London…)
+#  city:     as you want it written (Lisbon, London…)
 #  edition:  optional. Shown as Nº 12.
 #  time:     optional. Shown as 20H30.
 #  note:     optional. One short line, like the printed invite.
@@ -30,7 +30,7 @@
 #
 #  - date: "2027-03-11"
 #    format: Table of Seven
-#    city: Lisboa
+#    city: Lisbon
 #    edition: 1
 #    time: "20:30"
 #    note: "Fourteen seats, one question."
@@ -40,10 +40,10 @@ agenda: []
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  2. CITIES
-#  In order. Shown as one line: Lisboa → London.
+#  In order. Shown as one line: Lisbon → London.
 # ═════════════════════════════════════════════════════════════════════════════
 cities:
-  - Lisboa
+  - Lisbon
   - London
 
 
@@ -72,7 +72,7 @@ forms:
 en:
   meta:
     title: "Seven Hills · Members Club"
-    description: "A private circle for founders, athletes and creatives, born in Lisboa. Dinners, sport, travel and culture, with people chosen for character."
+    description: "A private circle for founders, athletes and creatives, born in Lisbon. Dinners, sport, travel and culture, with people chosen for character."
 
   nav:
     links:
@@ -94,10 +94,10 @@ en:
       - "*Athletes.*"
       - "Creatives."
     intro:
-      - "A private circle, born in Lisboa."
+      - "A private circle, born in Lisbon."
       - "Dinners, sport, travel and culture."
     # The words around the small round seal at the bottom of the hero
-    seal: "Seven Hills · Members Club · Lisboa"
+    seal: "Seven Hills · Members Club · Lisbon"
 
   circle:
     label: The Circle
@@ -116,7 +116,7 @@ en:
       - name: Table of Seven
         line: "A long dinner, a host, one question for the night."
       - name: Seven Hills Run
-        line: "Seven hills of Lisboa, early morning."
+        line: "Seven hills of Lisbon, early morning."
       - name: Court Sessions
         line: "Padel and tennis, hosted by athlete members."
       - name: Culture Nights
@@ -167,7 +167,7 @@ en:
 
   footer:
     city_label: City
-    city: Lisboa
+    city: Lisbon
     brand_label: Seven Hills
     about: About
     contact: Contact
@@ -178,7 +178,7 @@ en:
 
   apply:
     meta_title: "Apply · Seven Hills"
-    meta_description: "Apply to join Seven Hills, a private circle for founders, athletes and creatives, born in Lisboa."
+    meta_description: "Apply to join Seven Hills, a private circle for founders, athletes and creatives, born in Lisbon."
     label: Apply
     title: Tell us who you are
     intro: "We don't look for CVs. Write as you would at the table."
@@ -243,7 +243,7 @@ en:
     sections:
       - heading: Who we are
         body:
-          - "The controller of your data is André Carvalho, Lisboa, Portugal."
+          - "The controller of your data is André Carvalho, Lisbon, Portugal."
           - "Contact for anything about your data: thehillsmembers@gmail.com."
       - heading: What we collect
         body:

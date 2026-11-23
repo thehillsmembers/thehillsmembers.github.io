@@ -10,7 +10,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 type Item = { name: string; line: string };
 const experiences = t.experiences.items as Item[];
 
-// "Lisboa → London", with the last city in italic
+// "Lisbon → London", with the last city in italic
 const cities = site.cities;
 const routeLine = cities.map((c, i) => (i === cities.length - 1 && i > 0 ? `*${c}*` : c)).join(' → ');
 
