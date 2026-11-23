@@ -85,7 +85,7 @@ photos:
   join: ""
   partners: "A runway show in a glass-walled warehouse, guests watching a model walk past."
   lisbon: ""
-  london: ""
+  london: "Big Ben lit against a cloudy night sky in London."
 
 # Which part of a photo stays in view when its place crops it: top, bottom,
 # left or right. A photo that isn't listed here is cropped around its middle.
