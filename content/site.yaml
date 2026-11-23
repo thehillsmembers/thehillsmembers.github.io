@@ -75,7 +75,7 @@ forms:
 #  it. The site won't publish while a photo or its description is missing.
 # ═════════════════════════════════════════════════════════════════════════════
 photos:
-  hero: ""
+  hero: "A Seven Hills night: guests talking over drinks under red-lit timber beams, the evening's screen behind them."
   table-of-seven: ""
   seven-hills-run: ""
   court-sessions: ""
