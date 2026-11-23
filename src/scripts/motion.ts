@@ -16,6 +16,15 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menu?.op
 
 // ── Formspree forms: send in the background, then show our own thank-you page ──
 // (Without JavaScript the form still posts to Formspree, which shows its own confirmation.)
+// Ticked boxes that share a name (experiences[]) are sent as one readable line: "A, B".
+const tidy = (data: FormData) => {
+  const body = new FormData();
+  for (const [key, value] of data) {
+    if (!key.endsWith('[]')) body.append(key, value);
+    else if (!body.has(key.slice(0, -2))) body.append(key.slice(0, -2), data.getAll(key).join(', '));
+  }
+  return body;
+};
 document.querySelectorAll<HTMLFormElement>('form[data-formspree]').forEach((form) => {
   const error = form.querySelector<HTMLElement>('[data-form-error]');
   const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
@@ -24,7 +33,7 @@ document.querySelectorAll<HTMLFormElement>('form[data-formspree]').forEach((form
     if (error) error.hidden = true;
     if (button) button.disabled = true;
     try {
-      const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+      const res = await fetch(form.action, { method: 'POST', body: tidy(new FormData(form)), headers: { Accept: 'application/json' } });
       if (!res.ok) throw new Error(String(res.status));
       window.location.href = form.dataset.thanks || '/';
     } catch {
