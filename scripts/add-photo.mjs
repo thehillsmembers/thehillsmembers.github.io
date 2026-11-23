@@ -1,14 +1,16 @@
 // npm run photo -- <file> <place> [left,top,width,height]
 //   e.g.  npm run photo -- ~/Downloads/IMG_1234.jpg hero
 // Saves a photo for one of the places on the site as src/assets/photos/<place>.jpg: turned upright,
-// at most 2400px on its long side, and without hidden data such as the camera, the date or a GPS
-// location (this repository is public). The photographer's credit (Artist, Copyright) is kept.
+// at most 2400px on its long side, and without hidden data such as the camera, the date, a GPS
+// location or an embedded preview (this repository is public). The photographer's credit (Artist,
+// Copyright) is kept.
 // The optional last argument keeps only that part of the photo (in pixels of the upright photo),
 // for example to leave out a logo printed on it.
 import sharp from 'sharp';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
+import { dropThumbnail } from './drop-thumbnail.mjs';
 
 const [, , file, place, part] = process.argv;
 const site = parse(await readFile(new URL('../content/site.yaml', import.meta.url), 'utf8'));
@@ -50,8 +52,10 @@ if (part) {
 image = image.resize({ width: 2400, height: 2400, fit: 'inside', withoutEnlargement: true });
 if (Object.keys(keep).length) image = image.withExif({ IFD0: keep });
 const out = fileURLToPath(new URL(`../src/assets/photos/${place}.jpg`, import.meta.url));
-const info = await image.jpeg({ quality: 92, mozjpeg: true }).toFile(out);
+const { data, info } = await image.jpeg({ quality: 92, mozjpeg: true }).toBuffer({ resolveWithObject: true });
+const photo = dropThumbnail(data);
+await writeFile(out, photo);
 
-console.log(`src/assets/photos/${place}.jpg: ${info.width}×${info.height}, ${Math.round(info.size / 1024)} KB`);
+console.log(`src/assets/photos/${place}.jpg: ${info.width}×${info.height}, ${Math.round(photo.length / 1024)} KB`);
 if (keep.Artist || keep.Copyright) console.log(`Credit kept: ${keep.Artist ?? keep.Copyright}`);
 if (!String(site.photos[place] ?? '').trim()) console.log(`Next: describe the photo under photos > ${place} in content/site.yaml.`);
