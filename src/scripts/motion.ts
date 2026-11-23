@@ -102,11 +102,13 @@ if (!reduce) {
   });
 
   // Section headings: split into the lines the browser draws, each rising out of its own mask.
-  // autoSplit redoes the split when the fonts arrive or the width changes.
+  // autoSplit redoes the split when the fonts arrive or the width changes. Only whole lines are
+  // split, so screen readers can keep reading the words as they are (aria: 'none').
   gsap.utils.toArray<HTMLElement>('[data-split]').forEach((el) => {
     SplitText.create(el, {
       type: 'lines',
       mask: 'lines',
+      aria: 'none',
       linesClass: 'split-line',
       autoSplit: true,
       onSplit: (self) =>
