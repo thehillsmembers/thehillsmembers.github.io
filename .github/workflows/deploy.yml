@@ -19,8 +19,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      SITE_URL: https://andreredondocarvalho-ship-it.github.io
-      BASE_PATH: /seven-hills-site
+      # The site's public address. When the own domain is connected, change this
+      # to https://thehillsmembers.com (and add the domain under Settings → Pages).
+      SITE_URL: https://thehillsmembers.github.io
+      BASE_PATH: /
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
