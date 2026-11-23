@@ -18,7 +18,8 @@ interface Props {
   mobileRatio?: string;
   sizes: string;
   eager?: boolean;
-  /** Where the crop centres, e.g. "50% 30%" to keep faces near the top in view */
+  /** Where the crop centres, e.g. "50% 30%" to keep faces near the top in view. Without it,
+   *  photo_focus in content/site.yaml decides (top, bottom, left or right), else the middle. */
   position?: string;
   class?: string;
   [attribute: `data-${string}`]: unknown;
@@ -40,6 +41,9 @@ if (import.meta.env.PROD && !process.env.ALLOW_PLACEHOLDERS) {
 
 const widths = image ? [...new Set([480, 800, 1200, 1600, 2000].filter((w) => w < image.width).concat(Math.min(image.width, 2000)))] : [];
 const shape = (r: string) => r.replace(/\s/g, '');
+const sides: Record<string, string> = { top: '50% 0%', bottom: '50% 100%', left: '0% 50%', right: '100% 50%' };
+const focus = (position ?? site.photoFocus[name] ?? '').trim();
+const objectPosition = sides[focus] ?? focus;
 ---
 <div {...rest} class:list={['photo', className, { 'is-empty': !image }]} style={`--ratio: ${ratio}; --ratio-m: ${mobileRatio ?? ratio}`}>
   {image ? (
@@ -52,7 +56,7 @@ const shape = (r: string) => r.replace(/\s/g, '');
       loading={eager ? 'eager' : 'lazy'}
       fetchpriority={eager ? 'high' : undefined}
       decoding="async"
-      style={position ? `object-position: ${position}` : undefined}
+      style={objectPosition ? `object-position: ${objectPosition}` : undefined}
     />
   ) : (
     <p class="photo-label" aria-hidden="true">

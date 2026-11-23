@@ -83,9 +83,14 @@ photos:
   off-the-hills: "A narrow street in the City of London, the Gherkin rising between the towers."
   circle: ""
   join: ""
-  partners: ""
+  partners: "A runway show in a glass-walled warehouse, guests watching a model walk past."
   lisbon: ""
   london: ""
+
+# Which part of a photo stays in view when its place crops it: top, bottom,
+# left or right. A photo that isn't listed here is cropped around its middle.
+photo_focus:
+  partners: bottom
 
 
 # ═════════════════════════════════════════════════════════════════════════════

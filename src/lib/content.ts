@@ -19,6 +19,8 @@ export const site = {
   forms: { apply: (data.forms?.apply ?? '') as string, partners: (data.forms?.partners ?? '') as string },
   /** The photo places, in page order, each with the description of its photo. */
   photos: (data.photos ?? {}) as Record<string, string>,
+  /** Which side of a photo stays in view when its place crops it: top, bottom, left or right. */
+  photoFocus: (data.photo_focus ?? {}) as Record<string, string>,
 };
 
 // ── Agenda ────────────────────────────────────────────────

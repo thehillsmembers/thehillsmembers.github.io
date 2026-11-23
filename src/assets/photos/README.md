@@ -26,7 +26,9 @@ credit is kept.
 For sharp results on iPhones and large screens, photos should be at least 2000 px wide for
 hero and partners, 1200 px for the cities, circle and join, and 800 px for the experience cards.
 
-A short description of each photo goes in `content/site.yaml`, under `photos`.
+A short description of each photo goes in `content/site.yaml`, under `photos`. If a crop
+cuts off what matters, `photo_focus` in the same file keeps the top, bottom, left or right of
+that photo in view.
 A city added to the cities list gets its own place (named after the city).
 `npm run build` stops while a photo or its description is missing, so the live site never
 shows an empty box. `npm run dev` shows numbered boxes instead.
