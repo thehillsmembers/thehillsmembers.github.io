@@ -1,13 +1,16 @@
-// npm run photo -- <file> <place>      e.g.  npm run photo -- ~/Downloads/IMG_1234.jpg hero
+// npm run photo -- <file> <place> [left,top,width,height]
+//   e.g.  npm run photo -- ~/Downloads/IMG_1234.jpg hero
 // Saves a photo for one of the places on the site as src/assets/photos/<place>.jpg: turned upright,
 // at most 2400px on its long side, and without hidden data such as the camera, the date or a GPS
 // location (this repository is public). The photographer's credit (Artist, Copyright) is kept.
+// The optional last argument keeps only that part of the photo (in pixels of the upright photo),
+// for example to leave out a logo printed on it.
 import sharp from 'sharp';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
 
-const [, , file, place] = process.argv;
+const [, , file, place, part] = process.argv;
 const site = parse(await readFile(new URL('../content/site.yaml', import.meta.url), 'utf8'));
 const places = Object.keys(site.photos ?? {});
 if (!file || !places.includes(place)) {
@@ -39,9 +42,12 @@ function credit(exif) {
 
 const { exif } = await sharp(file).metadata();
 const keep = credit(exif);
-let image = sharp(file)
-  .rotate()
-  .resize({ width: 2400, height: 2400, fit: 'inside', withoutEnlargement: true });
+let image = sharp(file).rotate();
+if (part) {
+  const [left, top, width, height] = part.split(',').map(Number);
+  image = image.extract({ left, top, width, height });
+}
+image = image.resize({ width: 2400, height: 2400, fit: 'inside', withoutEnlargement: true });
 if (Object.keys(keep).length) image = image.withExif({ IFD0: keep });
 const out = fileURLToPath(new URL(`../src/assets/photos/${place}.jpg`, import.meta.url));
 const info = await image.jpeg({ quality: 92, mozjpeg: true }).toFile(out);
