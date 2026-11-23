@@ -1,47 +1,47 @@
 ---
 import Base from '../layouts/Base.astro';
 import Heading from '../components/Heading.astro';
-import Dots from '../components/Dots.astro';
-import { copy, site, upcoming, shortDate, image, rich, link } from '../lib/content';
+import { copy, site, upcoming, shortDate, rich, link } from '../lib/content';
 
 const t = copy('en');
-const heroImg = image(t.hero.image);
 const events = upcoming();
 const pad = (n: number) => String(n).padStart(2, '0');
 
-type Exp = { name: string; line: string; image?: string; alt?: string };
-const experiences = (t.experiences.items as Exp[]).map((e) => ({ ...e, src: image(e.image) }));
-
-type Pic = { file: string; alt: string };
-const agendaPics = (t.agenda.images as Pic[]).map((p) => ({ ...p, src: image(p.file) }));
-const [lowPic, highPic] = agendaPics;
+type Item = { name: string; line: string };
+const experiences = t.experiences.items as Item[];
 
 // "Lisboa → London", with the last city in italic
 const cities = site.cities;
 const routeLine = cities.map((c, i) => (i === cities.length - 1 && i > 0 ? `*${c}*` : c)).join(' → ');
-const cityPos = cities.map((c, i) => ({ name: c, pos: cities.length > 1 ? Math.round((i / (cities.length - 1)) * 6) : 0 }));
+
+// The seal's ring of text, repeated so it closes neatly around the circle
+const sealText = `${t.hero.seal} · `.toUpperCase();
 ---
 <Base>
-  <!-- 1 · HERO -->
+  <!-- 1 · HERO · Linho -->
   <section class="hero" aria-label="Seven Hills">
-    <div class="wrap grid">
+    <div class="wrap hero-inner">
       <Heading as="h1" lines={t.hero.lines} class="hero-title" />
-      <div class="hero-intro" data-reveal>
-        {t.hero.intro.map((p: string) => <p class="intro">{p}</p>)}
+      <div class="hero-foot">
+        <div class="hero-intro" data-enter>
+          {t.hero.intro.map((p: string) => <p class="intro">{p}</p>)}
+        </div>
+        <div class="seal" data-enter style="--delay: 0.9s" aria-hidden="true">
+          <svg class="seal-ring" viewBox="0 0 200 200" focusable="false">
+            <defs><path id="seal-path" d="M 100,100 m -79,0 a 79,79 0 1,1 158,0 a 79,79 0 1,1 -158,0" /></defs>
+            <text><textPath href="#seal-path" textLength="496" lengthAdjust="spacing">{sealText}</textPath></text>
+          </svg>
+          <img class="seal-mono" src={link('/brand/monogram-noite.png')} alt="" width="889" height="921" decoding="async" />
+        </div>
       </div>
-      {heroImg && (
-        <figure class="hero-photo" data-zoom>
-          <img src={heroImg} alt={t.hero.alt} fetchpriority="high" decoding="async" width="1600" height="1200" />
-        </figure>
-      )}
     </div>
   </section>
 
-  <!-- 2 · THE CIRCLE -->
-  <section id="circle" class="section circle" aria-labelledby="circle-title">
+  <!-- 2 · THE CIRCLE · Noite -->
+  <section id="circle" class="section circle theme-noite" aria-labelledby="circle-title">
     <div class="wrap grid">
       <p class="label" data-reveal>{t.circle.label}</p>
-      <Heading id="circle-title" lines={t.circle.lines} class="circle-title" />
+      <Heading id="circle-title" lines={t.circle.lines} flow />
       <div class="right circle-text" data-reveal>
         <p class="lead">{t.circle.text}</p>
         <p class="label values">{t.circle.values}</p>
@@ -49,120 +49,98 @@ const cityPos = cities.map((c, i) => ({ name: c, pos: cities.length > 1 ? Math.r
     </div>
   </section>
 
-  <!-- 3 · EXPERIENCES: horizontal slider -->
+  <!-- 3 · EXPERIENCES · Linho: a full-width editorial list -->
   <section id="experiences" class="section experiences" aria-labelledby="exp-title">
-    <div class="wrap grid">
-      <p class="label" data-reveal>{t.experiences.label}</p>
-      <Heading id="exp-title" lines={t.experiences.lines} size={2} />
-    </div>
-    <div class="slider" data-slider>
-      <ul class="slides" data-slides tabindex="0" aria-label={t.experiences.label}>
+    <div class="wrap">
+      <div class="exp-head">
+        <p class="label" data-reveal>{t.experiences.label}</p>
+        <Heading id="exp-title" lines={t.experiences.lines} flow />
+      </div>
+      <ol class="exp-list">
         {experiences.map((e, i) => (
-          <li class:list={['card', { 'no-img': !e.src }]}>
-            {e.src && (
-              <figure class="card-photo">
-                <img src={e.src} alt={e.alt ?? ''} loading="lazy" decoding="async" draggable="false" width="900" height="1200" />
-              </figure>
-            )}
-            <p class="num card-num">{pad(i + 1)}</p>
-            <h3 class="card-name">{e.name}</h3>
-            <p class="card-line">{e.line}</p>
+          <li class="exp-row" data-row>
+            <span class="rule" aria-hidden="true"></span>
+            <span class="num exp-num">{pad(i + 1)}</span>
+            <h3 class="exp-name"><span>{e.name}</span></h3>
+            <p class="exp-line">{e.line}</p>
+            {i === experiences.length - 1 && <span class="rule rule-end" aria-hidden="true"></span>}
           </li>
         ))}
-      </ul>
-      <div class="slider-nav" data-slider-nav>
-        <button type="button" class="arrow" data-prev aria-label={t.experiences.previous}>←</button>
-        <button type="button" class="arrow" data-next aria-label={t.experiences.next}>→</button>
-      </div>
+      </ol>
     </div>
   </section>
 
-  <!-- 4 · AGENDA -->
-  <section id="agenda" class="section agenda" aria-labelledby="agenda-title">
-    <div class="wrap grid agenda-top">
-      <div class="agenda-head">
-        <p class="label" data-reveal>{t.agenda.label}</p>
-        <Heading id="agenda-title" lines={t.agenda.lines} size={2} />
-      </div>
-      {highPic?.src && (
-        <figure class="pic pic-high" data-zoom><img src={highPic.src} alt={highPic.alt} loading="lazy" decoding="async" width="900" height="1200" /></figure>
-      )}
-      {lowPic?.src && (
-        <figure class="pic pic-low" data-zoom><img src={lowPic.src} alt={lowPic.alt} loading="lazy" decoding="async" width="1200" height="900" /></figure>
-      )}
-    </div>
-    <div class="wrap grid">
-      <div class="right-wide agenda-list">
-        {events.length > 0 ? (
-          <ol class="rows">
+  <!-- 4 · AGENDA · Noite. Only there while content/site.yaml has upcoming dates. -->
+  {events.length > 0 && (
+    <section id="agenda" class="section agenda theme-noite" aria-labelledby="agenda-title" data-agenda>
+      <div class="wrap grid">
+        <div class="agenda-head">
+          <p class="label" data-reveal>{t.agenda.label}</p>
+          <Heading id="agenda-title" lines={t.agenda.lines} flow />
+        </div>
+        <div class="agenda-body">
+          <ol class="events">
             {events.map((e) => (
-              <li class="row" data-reveal>
-                <time class="num row-date" datetime={e.date}>{shortDate(e.date)}</time>
-                <p class="row-format">
-                  {e.format}{e.edition ? <span class="row-ed"> Nº {e.edition}</span> : null}
-                </p>
-                <p class="row-meta">
-                  <span>{[e.weekday, e.time ? String(e.time).replace(':', 'H') : null, e.city].filter(Boolean).join(' · ')}</span>
-                  <span>{t.agenda.location_note}</span>
-                </p>
+              <li class="event" data-event-date={e.date} data-reveal>
+                <time class="event-date" datetime={e.date}>{shortDate(e.date)}</time>
+                <div class="event-main">
+                  <p class="event-format">
+                    {e.format}{e.edition ? <span class="event-ed"> Nº {e.edition}</span> : null}
+                  </p>
+                  {e.note && <p class="event-note">{e.note}</p>}
+                  <p class="event-meta">
+                    <span>{[e.weekday, e.time ? String(e.time).replace(':', 'H') : null, e.city].filter(Boolean).join(' · ')}</span>
+                    <span>{t.agenda.location_note}</span>
+                  </p>
+                </div>
               </li>
             ))}
           </ol>
-        ) : (
-          <p class="empty" data-reveal>{t.agenda.empty}</p>
-        )}
-        <p class="follow" data-reveal>
-          {t.agenda.follow} · <a class="link is-underlined" href={site.instagramUrl} rel="noopener">{site.instagramHandle}</a>
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5 · CITIES -->
-  <section class="section cities" aria-labelledby="cities-title">
-    <div class="wrap grid">
-      <p class="label" data-reveal>{t.cities.label}</p>
-      <h2 id="cities-title" class="display cities-title" data-lines>
-        <span class="line"><span set:html={rich(routeLine)} /></span>
-      </h2>
-      <div class="right-wide route" data-route aria-hidden="true">
-        <Dots />
-        <div class="route-names">
-          {cityPos.map((c) => <span class="label" style={`--pos:${c.pos}`}>{c.name}</span>)}
+          <p class="follow" data-reveal>
+            {t.agenda.follow} · <a class="link is-underlined" href={site.instagramUrl} rel="noopener">{site.instagramHandle}</a>
+          </p>
         </div>
-        <p class="intro more">{t.cities.more}</p>
       </div>
+    </section>
+  )}
+
+  <!-- 5 · CITIES · Areia: one line -->
+  <section class="section cities theme-areia" aria-labelledby="cities-title">
+    <div class="wrap cities-inner">
+      <p class="label" data-reveal>{t.cities.label}</p>
+      <h2 id="cities-title" class="heading cities-line" data-split set:html={rich(routeLine)} />
+      <p class="intro more" data-reveal>{t.cities.more}</p>
     </div>
   </section>
 
-  <!-- 6 · HOW TO JOIN -->
-  <section id="join" class="section join" aria-labelledby="join-title">
+  <!-- 6 · HOW TO JOIN · Sálvia -->
+  <section id="join" class="section join theme-salvia" aria-labelledby="join-title">
     <div class="wrap grid">
       <h2 id="join-title" class="label" data-reveal>{t.join.label}</h2>
       <ol class="steps">
-        {t.join.steps.map((s: { name: string; line: string }, i: number) => (
+        {t.join.steps.map((s: Item, i: number) => (
           <li class="step" data-reveal>
             <span class="num step-num">{pad(i + 1)}</span>
             <h3 class="step-name">{s.name}</h3>
-            <p>{s.line}</p>
+            <p class="step-line">{s.line}</p>
           </li>
         ))}
       </ol>
       <div class="join-close">
-        <Heading as="p" lines={t.join.lines} size={2} class="join-line" />
+        <Heading as="p" lines={t.join.lines} flow breaks class="join-line" />
         <a class="circle-button join-apply" href={link('/apply/')} data-reveal>{t.join.cta}</a>
       </div>
     </div>
   </section>
 
-  <!-- 7 · PARTNERS -->
+  <!-- 7 · PARTNERS · Linho -->
   <section id="partners" class="section partners" aria-labelledby="partners-title">
     <div class="wrap grid">
       <p class="label" data-reveal>{t.partners.label}</p>
-      <Heading id="partners-title" lines={t.partners.lines} size={2} class="partners-title" />
+      <Heading id="partners-title" lines={t.partners.lines} flow />
       <div class="right partners-body">
         <ul class="types">
-          {t.partners.types.map((p: { name: string; line: string }) => (
+          {t.partners.types.map((p: Item) => (
             <li data-reveal>
               <h3 class="label">{p.name}</h3>
               <p>{p.line}</p>
@@ -178,127 +156,145 @@ const cityPos = cities.map((c, i) => ({ name: c, pos: cities.length > 1 ? Math.r
 <style>
   .label { margin-bottom: clamp(1.25rem, 3vw, 2rem); }
 
-  /* 1 · Hero */
-  .hero { padding-top: calc(var(--header-h) + clamp(2rem, 6vw, 4rem)); }
+  /* 1 · Hero: the giant headline up top, the intro and the seal along the bottom */
+  .hero {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    padding-block: calc(var(--header-h) + clamp(2rem, 6vw, 4rem)) clamp(1.75rem, 4vw, 3rem);
+  }
+  .hero-inner { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: clamp(3rem, 9vw, 6rem); }
   .hero :global(.hero-title) { color: var(--salvia); }
-  .hero-intro { grid-column: 3 / -1; margin-top: clamp(2.5rem, 6vw, 4.5rem); }
-  .hero-photo { grid-column: 1 / -1; margin-top: clamp(2rem, 4vw, 2.5rem); overflow: hidden; }
-  .hero-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+  .hero-foot {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--col-gap);
+    align-items: end;
+  }
+  .hero-intro { grid-column: 1 / span 8; }
+  .hero-intro p { text-wrap: balance; }
+  .seal {
+    grid-column: 9 / -1;
+    justify-self: end;
+    display: grid;
+    place-items: center;
+    width: clamp(5.75rem, 4.5rem + 4vw, 8.75rem);
+    aspect-ratio: 1;
+  }
+  .seal > * { grid-area: 1 / 1; }
+  .seal-ring { width: 100%; height: 100%; overflow: visible; animation: spin 60s linear infinite; }
+  .seal-ring text { font-family: var(--font-black); font-size: 13.5px; fill: var(--noite); }
+  .seal-mono { width: 30%; height: auto; }
 
-  /* 2 · Circle */
-  .circle-text { margin-top: clamp(2.5rem, 6vw, 4.5rem); display: grid; gap: 2rem; }
-  .lead { font-size: clamp(1.15rem, 1rem + 0.6vw, 1.45rem); line-height: 1.45; max-width: 30ch; }
+  /* 2 · Circle: on Noite */
+  .circle-text { margin-top: clamp(3rem, 7vw, 5.5rem); display: grid; gap: clamp(2rem, 4vw, 3rem); }
+  .lead { font-family: var(--font-display); font-size: clamp(1.65rem, 1.15rem + 1.6vw, 2.65rem); line-height: 1.12; max-width: 24ch; }
   .values { margin: 0; line-height: 2; max-width: 34rem; }
 
-  /* 3 · Experiences slider */
-  .experiences .wrap { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
-  .slider { --offset: calc(var(--gutter) + (100vw - 2 * var(--gutter)) * 2 / 12); }
-  .slides {
-    display: flex;
-    gap: clamp(1rem, 2vw, 1.75rem);
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--offset);
-    padding-inline: var(--offset) var(--gutter);
-    scrollbar-width: none;
-    cursor: grab;
-  }
-  .slides::-webkit-scrollbar { display: none; }
-  .slides.is-dragging { cursor: grabbing; scroll-snap-type: none; }
-  .slides.is-dragging * { pointer-events: none; }
-  .card { flex: 0 0 clamp(15rem, 70vw, 23rem); scroll-snap-align: start; display: grid; align-content: start; gap: 0.4rem; user-select: none; }
-  .card-photo { overflow: hidden; margin-bottom: 0.9rem; background: var(--areia); }
-  .card-photo img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; transition: transform 0.9s var(--ease); }
-  .card:hover .card-photo img { transform: scale(1.04); }
-  .card-num { font-size: var(--size-label); letter-spacing: 0.1em; }
-  .card-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.9rem, 1.4rem + 1.4vw, 2.6rem); line-height: 1; }
-  .card-line { max-width: 28ch; }
-  .card.no-img { border-top: 1px solid var(--noite); padding-top: 1rem; }
-  .slider-nav { display: flex; gap: 0.5rem; padding-left: var(--offset); margin-top: 1.75rem; }
-  .arrow {
-    width: 3rem; height: 3rem;
-    border: 0; background: none; color: var(--noite);
-    font: 400 1.6rem / 1 var(--font-body);
-    cursor: pointer;
-    transition: transform 0.3s var(--ease), opacity 0.3s ease;
-  }
-  .arrow:hover { transform: translateX(var(--nudge, 0)); }
-  [data-prev] { --nudge: -4px; }
-  [data-next] { --nudge: 4px; }
-  .slider-nav[hidden] { display: none; }
-  .arrow:disabled { opacity: 0.25; cursor: default; transform: none; }
-
-  /* 4 · Agenda: heading, collage of two photos, list rows */
-  .agenda-head { grid-column: 1 / -1; }
-  .pic { overflow: hidden; }
-  .pic img { width: 100%; object-fit: cover; }
-  .pic-high { grid-column: 5 / -1; margin-top: 2.5rem; }
-  .pic-high img { aspect-ratio: 3 / 4; }
-  .pic-low { grid-column: 1 / span 9; margin-top: 1.5rem; }
-  .pic-low img { aspect-ratio: 4 / 3; }
-  .agenda-list { margin-top: clamp(3rem, 7vw, 5rem); }
-  .rows { border-top: 1px solid var(--noite); }
-  .row {
+  /* 3 · Experiences: five rows, thin rules */
+  .exp-head { margin-bottom: clamp(3rem, 7vw, 5.5rem); }
+  .exp-row {
+    position: relative;
     display: grid;
-    grid-template-columns: 4.5rem 1fr;
-    gap: 0.25rem 1rem;
-    padding-block: 1.25rem;
-    border-bottom: 1px solid var(--noite);
+    gap: 0.6rem;
+    padding-block: 1.5rem 1.75rem;
   }
-  .row-date { font-size: 1.05rem; padding-top: 0.35rem; }
-  .row-format { font-family: var(--font-display); font-size: clamp(1.8rem, 1.3rem + 1.6vw, 2.8rem); line-height: 1; }
-  .row-ed { font-family: var(--font-black); font-size: var(--size-label); letter-spacing: 0.12em; vertical-align: middle; }
-  .row-meta { grid-column: 2; display: grid; gap: 0.1rem; font-size: 0.9rem; }
-  .empty { font-family: var(--font-display); font-size: clamp(2.4rem, 1.6rem + 3vw, 4.4rem); line-height: 1; padding-block: 1.5rem; border-block: 1px solid var(--noite); }
-  .follow { margin-top: 1.75rem; font-size: 0.95rem; }
-
-  @media (min-width: 48rem) {
-    .hero-intro { grid-column: 5 / span 4; }
-    .hero-photo { grid-column: 5 / -1; }
-    .hero-photo img { aspect-ratio: 16 / 11; }
-    .agenda-head { grid-column: 1 / span 6; grid-row: 1; }
-    .pic-high { grid-column: 8 / span 4; grid-row: 1 / span 2; margin-top: 8rem; }
-    .pic-low { grid-column: 1 / span 5; grid-row: 2; margin-top: 6rem; }
-    .row { grid-template-columns: 6rem minmax(0, 1.3fr) minmax(0, 1fr); align-items: baseline; padding-block: 1.6rem; }
-    .row-meta { grid-column: 3; }
-  }
-
-  /* 5 · Cities */
-  .cities-title { grid-column: 1 / -1; }
-  .cities-title :global(span) { white-space: normal; }
-  .route { margin-top: clamp(2.5rem, 6vw, 4rem); --dot: var(--lima); }
-  .route :global(.dot) { box-shadow: inset 0 0 0 1px var(--noite); }
-  .route-names { position: relative; height: 1.5rem; margin-top: 0.9rem; }
-  .route-names span {
+  .rule {
     position: absolute;
-    left: calc(var(--pos) / 6 * 100%);
-    transform: translateX(calc(var(--pos) / 6 * -100%));
-    white-space: nowrap;
-    margin: 0;
+    inset: 0 0 auto;
+    height: 1px;
+    background: currentColor;
+    transform-origin: left center;
   }
-  .more { margin-top: 2rem; }
+  .rule-end { inset: auto 0 0; }
+  .exp-num { font-size: var(--size-label); letter-spacing: 0.12em; }
+  .exp-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(2rem, 0.95rem + 3.3vw, 4.25rem); line-height: 1; }
+  .exp-name span { position: relative; display: inline-block; transition: transform 0.7s var(--ease); }
+  /* the small Ouro dot that appears where the name was */
+  .exp-name span::before {
+    content: '';
+    position: absolute;
+    left: -1.35rem;
+    top: 50%;
+    width: 0.55rem;
+    height: 0.55rem;
+    margin-top: -0.2rem;
+    border-radius: 50%;
+    background: var(--ouro);
+    transform: scale(0);
+    transition: transform 0.5s var(--ease);
+  }
+  .exp-line { max-width: 34ch; }
+  @media (min-width: 48rem) {
+    .exp-row {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: baseline;
+      padding-block: clamp(1.6rem, 2.8vw, 2.4rem);
+    }
+    .exp-num { grid-column: 1 / span 1; }
+    .exp-name { grid-column: 2 / span 6; }
+    .exp-line { grid-column: 8 / -1; max-width: none; font-size: 0.95rem; }
+  }
+  @media (hover: hover) and (min-width: 48rem) {
+    .exp-row:hover .exp-name span { transform: translateX(1.9rem); }
+    .exp-row:hover .exp-name span::before { transform: scale(1); }
+  }
 
-  /* 6 · Join */
-  .steps { display: grid; gap: 2rem; }
-  .step { display: grid; gap: 0.4rem; padding-top: 1.25rem; border-top: 1px solid var(--noite); }
-  .step-num { font-size: 1.6rem; line-height: 1; margin-bottom: 0.9rem; }
-  .step-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.8rem, 1.4rem + 1.2vw, 2.5rem); line-height: 1; }
-  .join-close { margin-top: clamp(4rem, 10vw, 8rem); display: grid; gap: 2rem; justify-items: start; }
+  /* 4 · Agenda: on Noite, heading on the left, dates on the right */
+  .agenda-body { margin-top: clamp(2.5rem, 6vw, 4rem); }
+  .events { border-top: 1px solid color-mix(in srgb, var(--linho) 28%, transparent); }
+  .event {
+    display: grid;
+    grid-template-columns: 5.25rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 1.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--linho) 28%, transparent);
+  }
+  .event-date { font-family: var(--font-display); font-size: clamp(2.1rem, 1.6rem + 1.6vw, 3.25rem); line-height: 1; color: var(--ouro); }
+  .event-format { font-family: var(--font-display); font-size: clamp(1.7rem, 1.3rem + 1.2vw, 2.5rem); line-height: 1.05; }
+  .event-ed { font-family: var(--font-black); font-size: var(--size-label); letter-spacing: 0.12em; vertical-align: middle; color: var(--ouro); }
+  .event-note { margin-top: 0.5rem; max-width: 36ch; }
+  .event-meta { display: grid; gap: 0.1rem; margin-top: 0.6rem; font-size: 0.9rem; }
+  .follow { margin-top: 2rem; font-size: 0.95rem; }
+  @media (min-width: 48rem) {
+    .agenda-head { grid-column: 1 / span 6; align-self: start; position: sticky; top: calc(var(--header-h) + 2.5rem); }
+    .agenda-body { grid-column: 7 / -1; margin-top: 0; }
+    .event { grid-template-columns: 7rem minmax(0, 1fr); padding-block: 1.75rem; }
+  }
+
+  /* 5 · Cities: on Areia, one centred line */
+  .cities { padding-block: clamp(7rem, 15vw, 12.5rem); }
+  .cities-inner { display: grid; justify-items: center; text-align: center; }
+  .more { margin-top: clamp(1.75rem, 4vw, 2.5rem); }
+
+  /* 6 · Join: on Sálvia. Large type in Linho, small type in Noite. */
+  .steps { display: grid; gap: 2.25rem; }
+  .step { display: grid; gap: 0.5rem; padding-top: 1.25rem; border-top: 1px solid var(--linho); }
+  .step-num { font-size: 1.6rem; line-height: 1; margin-bottom: 0.9rem; color: var(--linho); }
+  .step-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.9rem, 1.45rem + 1.3vw, 2.75rem); line-height: 1; color: var(--linho); text-wrap: balance; }
+  .step-line { max-width: 30ch; }
+  .join-close { margin-top: clamp(4.5rem, 11vw, 8.5rem); display: grid; gap: 2.25rem; justify-items: start; }
+  .join :global(.join-line) { color: var(--linho); }
   .join-apply { --circle: 7.5rem; }
   @media (min-width: 48rem) {
     .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--col-gap); }
     .join-close { grid-template-columns: 1fr auto; align-items: end; }
-    .join-apply { --circle: 9rem; }
+    .join-apply { --circle: 9.5rem; }
   }
 
-  /* 7 · Partners */
-  .partners-body { margin-top: clamp(2.5rem, 6vw, 4rem); display: grid; gap: 2rem; justify-items: start; }
+  /* 7 · Partners: on Linho */
+  .partners-body { margin-top: clamp(3rem, 7vw, 5rem); display: grid; gap: 2rem; justify-items: start; }
   .types { width: 100%; border-top: 1px solid var(--noite); }
   .types li { display: grid; gap: 0.25rem; padding-block: 1.1rem; border-bottom: 1px solid var(--noite); }
   .types .label { margin: 0; }
   .partners-cta { font-family: var(--font-display); font-size: clamp(1.8rem, 1.4rem + 1.4vw, 2.6rem); line-height: 1.1; }
   @media (min-width: 48rem) {
     .types li { grid-template-columns: 9rem 1fr; align-items: baseline; }
+  }
+
+  @media (min-width: 48rem) {
+    .hero-intro { grid-column: 5 / span 4; }
+    .seal { grid-column: 10 / -1; }
   }
 </style>

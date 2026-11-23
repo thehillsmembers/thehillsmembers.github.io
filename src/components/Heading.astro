@@ -1,10 +1,26 @@
 ---
-// A big serif heading made of stacked lines. *word* becomes italic.
-// Each line slides up into place when it scrolls into view (see scripts/motion.ts).
+// Serif headings. *word* becomes italic.
+// - Without `flow`: every entry of `lines` sits on its own line, at giant size
+//   (the hero headline). The lines rise into view as the page opens (global.css).
+// - With `flow`: the lines run together as one section heading, on one line where it fits.
+//   The motion script splits it into the lines the browser actually draws and reveals them
+//   one by one on scroll. `breaks` keeps each entry on its own line (two sentences, say).
 import { rich } from '../lib/content';
-interface Props { lines: string[]; as?: 'h1' | 'h2' | 'h3'; size?: 1 | 2; class?: string; id?: string }
-const { lines, as: Tag = 'h2', size = 1, class: className, id } = Astro.props;
+interface Props {
+  lines: string[];
+  as?: 'h1' | 'h2' | 'h3' | 'p';
+  flow?: boolean;
+  breaks?: boolean;
+  class?: string;
+  id?: string;
+}
+const { lines, as: Tag = 'h2', flow = false, breaks = false, class: className, id } = Astro.props;
+const html = lines.map((l) => rich(l)).join(breaks ? '<br />' : ' ');
 ---
-<Tag id={id} class:list={['display', { 'display-2': size === 2 }, className]} data-lines>
-  {lines.map((l) => <span class="line"><span set:html={rich(l)} /></span>)}
-</Tag>
+{flow ? (
+  <Tag id={id} class:list={['heading', className]} data-split set:html={html} />
+) : (
+  <Tag id={id} class:list={['display', className]} data-lines>
+    {lines.map((l, i) => <span class="line" style={`--i:${i}`}><span set:html={rich(l)} /></span>)}
+  </Tag>
+)}

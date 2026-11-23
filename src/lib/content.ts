@@ -1,12 +1,9 @@
-// Reads content/site.yaml (all text, dates, cities) and finds the photos and video
-// dropped into public/. Nothing here needs editing to change the site's content.
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+// Reads content/site.yaml (all text, dates, cities, form addresses).
+// Nothing here needs editing to change the site's content.
 import { parse } from 'yaml';
 import raw from '../../content/site.yaml?raw';
 
 const data = parse(raw);
-const PUBLIC = join(process.cwd(), 'public');
 
 export type Lang = 'en';
 /** All the text for one language. A Portuguese version can be added later as `pt:` in the YAML. */
@@ -17,7 +14,6 @@ export function copy(lang: Lang = 'en') {
 export const site = {
   instagramHandle: data.instagram_handle as string,
   instagramUrl: data.instagram_url as string,
-  contactEmail: data.contact_email as string,
   cities: (data.cities ?? []) as string[],
   /** Formspree addresses for the forms. Empty = use Netlify Forms. */
   forms: { apply: (data.forms?.apply ?? '') as string, partners: (data.forms?.partners ?? '') as string },
@@ -56,20 +52,13 @@ export function shortDate(iso: string) {
   return `${d}.${m}`;
 }
 
-// ── Media found in public/ ─────────────────────────────────
-
-const exists = (rel: string) => existsSync(join(PUBLIC, rel));
+// ── Links ──────────────────────────────────────────────────
 
 // The site can live at the root of a domain or under a sub-path (GitHub Pages: /seven-hills-site/).
 const BASE = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '/');
 /** Turns a site path like "/apply/" or "/#agenda" into one that works wherever the site is hosted. */
 export function link(path: string): string {
   return path.startsWith('/') ? BASE + path.slice(1) : path;
-}
-
-/** An image path from the YAML, only if the file is really there. */
-export function image(rel?: string): string | null {
-  return rel && exists(join('images', rel)) ? link(`/images/${rel}`) : null;
 }
 
 /** Escapes text and turns *one word* into <em>one word</em> for the serif italic. */

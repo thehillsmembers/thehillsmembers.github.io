@@ -1,4 +1,5 @@
 ---
+// Noite footer: four small columns, then the wordmark, large, in Ouro.
 import { copy, site, link } from '../lib/content';
 const t = copy('en');
 const f = t.footer;
@@ -14,7 +15,7 @@ const year = new Date().getFullYear();
       <div>
         <p class="label">{f.brand_label}</p>
         <p><a class="link" href={link('/#circle')}>{f.about}</a></p>
-        <p><a class="link" href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
+        <p><a class="link" href={link('/partners/')}>{f.contact}</a></p>
       </div>
       <div>
         <p class="label">{f.legal_label}</p>
@@ -25,23 +26,24 @@ const year = new Date().getFullYear();
         <p><a class="link" href={site.instagramUrl} rel="noopener">{f.instagram} · {site.instagramHandle}</a></p>
       </div>
     </div>
-    <div class="base">
-      <img src={link('/brand/wordmark-noite.png')} alt="Seven Hills" width="140" height="25" loading="lazy" />
-      <p class="small">© <span data-year>{year}</span> Seven Hills</p>
-    </div>
+    <img class="word" src={link('/brand/wordmark-ouro.png')} alt="Seven Hills" width="3755" height="677" loading="lazy" decoding="async" />
+    <p class="small">© <span data-year>{year}</span> Seven Hills</p>
   </div>
 </footer>
 <script is:inline>document.querySelectorAll('[data-year]').forEach(function (el) { el.textContent = new Date().getFullYear(); });</script>
 
 <style>
-  .site-footer { margin-top: var(--section); padding-block: clamp(3rem, 6vw, 4.5rem) 2rem; border-top: 1px solid var(--noite); }
+  .site-footer {
+    background: var(--noite);
+    color: var(--linho);
+    padding-block: clamp(4rem, 8vw, 6.5rem) clamp(1.5rem, 3vw, 2.25rem);
+  }
   .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.5rem var(--col-gap); }
   .cols > div { display: grid; gap: 0.35rem; align-content: start; font-size: 0.95rem; }
-  .cols .label { margin-bottom: 0.6rem; }
+  .cols .label { margin-bottom: 0.6rem; color: var(--ouro); }
   .cols a { overflow-wrap: anywhere; }
-  .base { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; margin-top: clamp(3.5rem, 8vw, 6rem); }
-  .base img { width: 140px; height: auto; }
-  .small { font-size: 0.8rem; }
+  .word { width: 100%; height: auto; margin-top: clamp(4.5rem, 11vw, 8.5rem); }
+  .small { margin-top: clamp(1.25rem, 2.5vw, 1.75rem); font-size: 0.8rem; }
   @media (min-width: 48rem) {
     .cols { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   }

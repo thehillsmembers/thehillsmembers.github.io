@@ -9,20 +9,15 @@
 #   - Save the file. Locally the page updates when you refresh the browser.
 #     Online, it updates a minute after you publish the change.
 #
-#  PHOTOS don't go here. Drop the files in public/images/ with these names and
-#  the site picks them up by itself. A photo that isn't there is simply not shown.
-#    hero.jpg                       big photo under the hero intro
-#    experiences/table-of-seven.jpg  (and the other four, names below)
-#    agenda-1.jpg, agenda-2.jpg      the two photos next to the agenda
-#
 #  In headings, *one word between stars* is shown in italic.
 # ─────────────────────────────────────────────────────────────────────────────
 
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  1. AGENDA
-#  One block per event. Past dates disappear by themselves the next time the
-#  site is published. If the list is empty, the site shows "New dates soon."
+#  One block per event. Past dates disappear by themselves.
+#  While the list is empty, the Agenda section and its menu link are hidden.
+#  They appear by themselves once a date is added here and published.
 #
 #  date:     year-month-day, in quotes. Shown as 07.03, with the weekday.
 #  format:   one of the five experience names
@@ -45,7 +40,7 @@ agenda: []
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  2. CITIES
-#  In order. Drawn along the seven-dot line, first to last.
+#  In order. Shown as one line: Lisboa → London.
 # ═════════════════════════════════════════════════════════════════════════════
 cities:
   - Lisboa
@@ -57,7 +52,6 @@ cities:
 # ═════════════════════════════════════════════════════════════════════════════
 instagram_handle: "@thehillsmembers"
 instagram_url: "https://instagram.com/thehillsmembers"
-contact_email: "thehillsmembers@gmail.com"
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -102,8 +96,8 @@ en:
     intro:
       - "A private circle, born in Lisboa."
       - "Dinners, sport, travel and culture."
-    image: hero.jpg
-    alt: "A long table on a Lisboa terrace in late afternoon light."
+    # The words around the small round seal at the bottom of the hero
+    seal: "Seven Hills · Members Club · Lisboa"
 
   circle:
     label: The Circle
@@ -118,29 +112,17 @@ en:
     lines:
       - "Five"
       - "*experiences*"
-    previous: Previous experience
-    next: Next experience
     items:
       - name: Table of Seven
         line: "A long dinner, a host, one question for the night."
-        image: experiences/table-of-seven.jpg
-        alt: "A dinner table set before the guests arrive."
       - name: Seven Hills Run
         line: "Seven hills of Lisboa, early morning."
-        image: experiences/seven-hills-run.jpg
-        alt: "Runners seen from behind on a Lisboa hill."
       - name: Court Sessions
         line: "Padel and tennis, hosted by athlete members."
-        image: experiences/court-sessions.jpg
-        alt: "A padel racket and ball on the court line."
       - name: Culture Nights
         line: "Art, music and conversation."
-        image: experiences/culture-nights.jpg
-        alt: "People listening in a small room with warm lamps."
       - name: Off the Hills
         line: "Trips to the cities of the circle."
-        image: experiences/off-the-hills.jpg
-        alt: "A view from a window on the road."
 
   agenda:
     label: Agenda
@@ -149,13 +131,7 @@ en:
       - "*on*"
       - "next?"
     location_note: "Location revealed 48h before."
-    empty: "New dates soon."
     follow: "First on Instagram"
-    images:
-      - file: agenda-1.jpg
-        alt: "Candles and glasses on a set table."
-      - file: agenda-2.jpg
-        alt: "A quiet corner by a window, a chair and a small table."
 
   cities:
     label: Cities
@@ -194,6 +170,7 @@ en:
     city: Lisboa
     brand_label: Seven Hills
     about: About
+    contact: Contact
     legal_label: Legal
     privacy: Privacy
     socials_label: Socials

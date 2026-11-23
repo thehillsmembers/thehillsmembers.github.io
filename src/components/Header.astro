@@ -1,18 +1,22 @@
 ---
 // Sticky header: wordmark left, small nav in two columns, round Ouro Apply button right.
 // On phones the nav folds into a simple "Menu"; the Apply circle stays visible.
-import { copy, link } from '../lib/content';
+// The Agenda link only shows while there are upcoming dates. data-agenda-until carries the
+// last one, so the motion script can drop the link once that day has passed.
+import { copy, link, upcoming } from '../lib/content';
 const t = copy('en');
-const links: { label: string; href: string }[] = t.nav.links;
+const events = upcoming();
+const links = (t.nav.links as { label: string; href: string }[]).filter((l) => events.length > 0 || !l.href.endsWith('#agenda'));
+const agendaUntil = events.length ? events[events.length - 1].date : undefined;
 ---
-<header class="site-header" data-header>
+<header class="site-header" data-header data-agenda-until={agendaUntil}>
   <div class="wrap bar">
     <a href={link('/')} class="home" aria-label={t.nav.home}>
       <img src={link('/brand/wordmark-noite.png')} alt="" width="150" height="27" />
     </a>
 
     <nav class="nav" aria-label="Main">
-      <ul>
+      <ul style={`--cols:${links.length > 3 ? 2 : links.length}`}>
         {links.map((l) => <li><a class="link" href={link(l.href)}>{l.label}</a></li>)}
       </ul>
     </nav>
@@ -55,7 +59,7 @@ const links: { label: string; href: string }[] = t.nav.links;
   .nav { display: none; }
   .nav ul {
     display: grid;
-    grid-template-columns: repeat(2, auto);
+    grid-template-columns: repeat(var(--cols, 2), auto);
     gap: 0.35rem 3.5rem;
   }
   .nav a { font-size: 0.85rem; letter-spacing: 0.02em; }
@@ -64,7 +68,7 @@ const links: { label: string; href: string }[] = t.nav.links;
   .apply {
     --circle: 4.6rem; align-self: flex-start; margin-top: 0.75rem; font-size: 0.62rem;
     transition: width 0.4s var(--ease), margin-top 0.4s var(--ease), font-size 0.4s var(--ease),
-      transform 0.5s var(--ease), background-color 0.3s ease, color 0.3s ease;
+      color 0.35s ease 0.1s;
   }
   .site-header.is-solid .apply { --circle: 4.25rem; margin-top: calc((var(--header-h) - 1px - 4.25rem) / 2); font-size: 0.62rem; }
 
