@@ -349,6 +349,7 @@ const founderLinks = [
     font-stretch: var(--wide);
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    text-wrap: balance;
     color: var(--muted);
   }
   @media (min-width: 48rem) {
@@ -399,6 +400,11 @@ const founderLinks = [
       inset: clamp(3rem, 5vw, 4.5rem) auto clamp(3rem, 5vw, 4.5rem) 0;
       border-left: 1px solid var(--line);
     }
+  }
+  /* on very wide screens the band stays as tall as on a laptop, instead of growing with the photo */
+  @media (min-width: 90rem) {
+    .trio :global(.trio-photo) { aspect-ratio: auto; min-height: 45rem; }
+    .trio :global(.trio-photo > picture) { position: absolute; inset: 0; }
   }
 
   /* ── Cities: the photo of each city with its name below, and the cities to come ── */
