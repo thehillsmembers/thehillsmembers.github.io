@@ -419,12 +419,13 @@ const founderLinks = [
 
   /* ── Apply: the text on Linho, the form on Noite (edge to edge on phones) ── */
   .apply { padding-top: 0; scroll-margin-top: 2.5rem; }
-  .apply-grid { display: grid; gap: 2rem; }
+  .apply-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; }
   .apply-text { display: grid; justify-items: start; align-content: start; gap: 0.9rem; }
-  .apply-block { margin-inline: calc(-1 * var(--gutter)); padding: 2.25rem var(--gutter) 2.5rem; }
+  /* far down the page, so the browser only lays the form out once it comes near the screen */
+  .apply-block { margin-inline: calc(-1 * var(--gutter)); padding: 2.25rem var(--gutter) 2.5rem; content-visibility: auto; contain-intrinsic-block-size: auto 1525px; }
   .apply-block :global(.form) { max-width: none; }
   @media (min-width: 48rem) {
-    .apply-block { margin-inline: 0; padding: clamp(2.25rem, 4vw, 3.5rem); }
+    .apply-block { margin-inline: 0; padding: clamp(2.25rem, 4vw, 3.5rem); contain-intrinsic-block-size: auto 1217px; }
   }
   @media (min-width: 64rem) {
     .apply-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: clamp(2rem, 5vw, 5rem); align-items: start; }

@@ -55,6 +55,9 @@ const go = (href: string) => (href === '/apply/' ? applyLink(Astro.url.pathname)
 <script is:inline>document.querySelectorAll('[data-year]').forEach(function (el) { el.textContent = new Date().getFullYear(); });</script>
 
 <style>
+  /* laid out once it comes near the screen, so it doesn't slow the first view down */
+  .site-footer { content-visibility: auto; contain-intrinsic-block-size: auto 1040px; }
+
   /* ── Three notes on Linho: stacked with hairlines on phones, three columns on wide screens ── */
   .notes { border-top: 1px solid var(--line); }
   .note {
@@ -129,6 +132,7 @@ const go = (href: string) => (href === '/apply/' ? applyLink(Astro.url.pathname)
   .ig { color: #a5a098; }
   .ig svg .dot { fill: currentColor; stroke: none; }
   @media (min-width: 48rem) {
+    .site-footer { contain-intrinsic-block-size: auto 640px; }
     .cols { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 3.5rem; }
     .bottom { grid-template-columns: 1fr auto 1fr; align-items: center; }
     .bottom p:first-child { justify-self: start; }
