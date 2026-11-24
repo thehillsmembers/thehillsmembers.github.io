@@ -107,7 +107,7 @@ const founderLinks = [
         <h2 id="circle-title" class="title">{t.circle.title}</h2>
         <p class="accent">{t.circle.accent}</p>
         <p class="ed-body">{t.circle.text}</p>
-        <p class="values">{t.circle.values}</p>
+        <p class="values">{t.circle.values.replaceAll(' · ', ' · ')}</p>
         <a class="cta" href="#join">{t.circle.cta}</a>
       </div>
       <Photo name="circle" ratio="3 / 4" class="ed-media" sizes="(min-width: 48rem) 32rem, 100vw" />
@@ -192,7 +192,7 @@ const founderLinks = [
         <p class="accent">{t.apply.home_accent}</p>
         <p class="hint">{t.apply.required_note}</p>
       </div>
-      <div class="apply-block on-noite">
+      <div class="apply-block on-noite" data-late>
         <ApplyForm />
       </div>
     </div>
@@ -421,7 +421,7 @@ const founderLinks = [
   .apply { padding-top: 0; scroll-margin-top: 2.5rem; }
   .apply-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; }
   .apply-text { display: grid; justify-items: start; align-content: start; gap: 0.9rem; }
-  /* far down the page, so the browser only lays the form out once it comes near the screen */
+  /* far down the page: laid out after the first view (site.ts), or once it comes near the screen */
   .apply-block { margin-inline: calc(-1 * var(--gutter)); padding: 2.25rem var(--gutter) 2.5rem; content-visibility: auto; contain-intrinsic-block-size: auto 1525px; }
   .apply-block :global(.form) { max-width: none; }
   @media (min-width: 48rem) {

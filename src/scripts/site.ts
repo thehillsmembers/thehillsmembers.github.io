@@ -25,9 +25,19 @@ if (header) {
     const now = window.scrollY > 24;
     if (now !== folded) header.classList.toggle('is-folded', (folded = now));
   };
-  update();
+  // (checked again once loaded: reading the position any sooner would make the page wait)
   window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('load', update);
 }
+
+// ── The form and the footer are laid out after the first view (content-visibility in their
+//    styles); once the page has loaded they are made ready, one at a time, so a screenshot of the
+//    whole page shows them too ──
+window.addEventListener('load', () => {
+  document.querySelectorAll<HTMLElement>('[data-late]').forEach((el, i) => {
+    setTimeout(() => (el.style.contentVisibility = 'visible'), 600 + i * 250);
+  });
+});
 
 // ── Carousels: the arrows move a page of cards; the count follows the swipe ──
 document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((carousel) => {

@@ -12,7 +12,7 @@ const year = new Date().getFullYear();
 // "Apply" scrolls to the form when it is on the same page
 const go = (href: string) => (href === '/apply/' ? applyLink(Astro.url.pathname) : to(href));
 ---
-<footer class="site-footer">
+<footer class="site-footer" data-late>
   <div class="notes">
     <div class="wrap notes-grid">
       {notes.map((n) => (
@@ -55,7 +55,7 @@ const go = (href: string) => (href === '/apply/' ? applyLink(Astro.url.pathname)
 <script is:inline>document.querySelectorAll('[data-year]').forEach(function (el) { el.textContent = new Date().getFullYear(); });</script>
 
 <style>
-  /* laid out once it comes near the screen, so it doesn't slow the first view down */
+  /* laid out after the first view (site.ts), or once it comes near the screen */
   .site-footer { content-visibility: auto; contain-intrinsic-block-size: auto 1040px; }
 
   /* ── Three notes on Linho: stacked with hairlines on phones, three columns on wide screens ── */
