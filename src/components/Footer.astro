@@ -30,7 +30,7 @@ const go = (href: string) => (href === '/apply/' ? applyLink(Astro.url.pathname)
   <div class="dark">
     <div class="wrap">
       <a class="logo" href={link('/')} aria-label={t.nav.home}>
-        <img src={link('/brand/wordmark-ouro.png')} alt="" width="3755" height="677" loading="lazy" decoding="async" />
+        <img src={link('/brand/wordmark-ouro.svg')} alt="" width="4640" height="1191" loading="lazy" decoding="async" />
       </a>
       <nav class="cols" aria-label="Footer">
         {columns.map((c) => (
@@ -84,8 +84,8 @@ const go = (href: string) => (href === '/apply/' ? applyLink(Astro.url.pathname)
     color: var(--linho);
     padding-block: 3.5rem calc(1.5rem + env(safe-area-inset-bottom));
   }
-  .logo { display: block; width: fit-content; margin-inline: auto; padding: 0.5rem; }
-  .logo img { width: 11rem; height: auto; }
+  .logo { display: block; width: fit-content; margin-inline: auto; }
+  .logo img { width: 12.15rem; height: auto; }
 
   .cols {
     display: grid;

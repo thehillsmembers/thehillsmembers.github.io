@@ -37,7 +37,7 @@ const igLabel = `Instagram, ${site.instagramHandle}`;
     </div>
 
     <a class="home" href={link('/')} aria-label={t.nav.home}>
-      <img src={link('/brand/wordmark-noite.png')} alt="" width="176" height="32" />
+      <img src={link('/brand/wordmark-noite.svg')} alt="" width="4640" height="1191" />
     </a>
 
     <div class="bar-end">
@@ -73,8 +73,9 @@ const igLabel = `Instagram, ${site.instagramHandle}`;
   }
   .bar-start { display: flex; align-items: center; margin-left: -0.7rem; }
   .bar-end { display: flex; align-items: center; justify-content: flex-end; gap: 0.25rem; }
-  .home { display: block; padding: 0.6rem 0.25rem; }
-  .home img { width: 7.5rem; height: auto; }
+  /* the logo file has clear space around the letters, about 7px on phones */
+  .home { display: block; margin-inline: -0.4rem; padding-block: 0.25rem; }
+  .home img { width: 8.29rem; height: auto; }
 
   .ig svg .dot { fill: currentColor; stroke: none; }
   .ig-wide { display: none; }
@@ -129,7 +130,7 @@ const igLabel = `Instagram, ${site.instagramHandle}`;
     .menu,
     .ig-phone { display: none; }
     .ig-wide { display: inline-grid; }
-    .home img { width: 11rem; }
+    .home img { width: 12.15rem; }
 
     .nav-row {
       display: block;
