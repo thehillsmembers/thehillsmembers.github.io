@@ -1,8 +1,7 @@
 // Behaviour, kept small: the phone menu, the header's row of links folding away on scroll, the
-// message strip, the experiences carousel, agenda dates that have passed, and the forms.
+// experiences carousel, agenda dates that have passed, and the forms.
 // Without JavaScript every word is still on the page and the carousel scrolls by hand.
 
-const root = document.documentElement;
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ── Phone menu: closes after choosing a link, with Escape, or when the screen turns wide ──
@@ -28,35 +27,6 @@ if (header) {
   };
   update();
   window.addEventListener('scroll', update, { passive: true });
-}
-
-// ── Message strip: the lines take turns every five seconds (holding still under the mouse or
-//    keyboard); the cross closes the strip for the rest of the visit ──
-const promo = document.querySelector<HTMLElement>('[data-promo]');
-if (promo) {
-  const items = [...promo.querySelectorAll<HTMLElement>('[data-promo-item]')];
-  let current = 0;
-  let held = false;
-  if (items.length > 1) {
-    window.setInterval(() => {
-      if (held || document.hidden || root.classList.contains('promo-closed')) return;
-      items[current].classList.remove('is-active');
-      current = (current + 1) % items.length;
-      items[current].classList.add('is-active');
-    }, 5000);
-    promo.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') held = true; });
-    promo.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') held = false; });
-    promo.addEventListener('focusin', () => (held = true));
-    promo.addEventListener('focusout', () => (held = false));
-  }
-  promo.querySelector('[data-promo-close]')?.addEventListener('click', () => {
-    root.classList.add('promo-closed');
-    try {
-      sessionStorage.setItem('sh-promo-closed', '1');
-    } catch {
-      // private browsing: it stays closed on this page only
-    }
-  });
 }
 
 // ── Carousels: the arrows move a page of cards; the count follows the swipe ──
@@ -114,7 +84,8 @@ if ((until && until < today) || (agenda && !agenda.querySelector('[data-event-da
   document.querySelectorAll('a[href$="#agenda"]').forEach((a) => a.closest('li')?.remove());
 }
 
-// ── Formspree forms: send in the background, then show our own thank-you page ──
+// ── Formspree forms: send in the background, then show our own thank-you page (data-thanks),
+//    or a thank-you line in place of the form (data-done) ──
 // (Without JavaScript the form still posts to Formspree, which shows its own confirmation.)
 // Ticked boxes that share a name (experiences[]) are sent as one readable line: "A, B".
 const tidy = (data: FormData) => {
@@ -135,7 +106,14 @@ document.querySelectorAll<HTMLFormElement>('form[data-formspree]').forEach((form
     try {
       const res = await fetch(form.action, { method: 'POST', body: tidy(new FormData(form)), headers: { Accept: 'application/json' } });
       if (!res.ok) throw new Error(String(res.status));
-      window.location.href = form.dataset.thanks || '/';
+      const done = document.getElementById(form.dataset.done ?? '');
+      if (done) {
+        form.hidden = true;
+        done.hidden = false;
+        done.focus();
+      } else {
+        window.location.href = form.dataset.thanks || '/';
+      }
     } catch {
       if (error) error.hidden = false;
       if (button) button.disabled = false;

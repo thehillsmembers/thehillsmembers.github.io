@@ -1,46 +1,46 @@
 /* Seven Hills · global styles.
-   In the manner of a maison's website: a Linho page, Noite type, light panels, photography first.
-   One typeface, Archivo (variable weight and width): titles, labels and links in small, slightly
-   wide bold capitals; reading text light. Blocks are separated by space, not by colour.
+   A maison's layout (photography first, plenty of space) with full-width blocks of colour: Linho,
+   then Noite, Sálvia and Areia. Everything is set from the left.
+   Type: titles in Archivo Black capitals; one line per part in Instrument Serif italics (.accent);
+   labels and links in small, slightly wide Archivo capitals; reading text in light Archivo.
    Phones first: 48rem (768px) opens two columns, 64rem (1024px) the full header. */
 
 :root {
   /* Palette */
   --linho: #f5eee2;  /* the page — never pure white */
-  --noite: #161513;  /* type, buttons, the line at the top, the footer */
-  --ouro: #eaa83d;   /* the footer wordmark */
-  --areia: #f2d9a8;
-  --salvia: #6f8a6a;
+  --noite: #161513;  /* type, buttons, the line at the top, the footer, dark blocks */
+  --ouro: #eaa83d;   /* only on Noite: card labels, the form's button, the footer wordmark */
+  --areia: #f2d9a8;  /* a block of colour: partners */
+  --salvia: #6f8a6a; /* a block of colour: how to join, the newsletter */
   --poente: #f0612e; /* form errors */
   --lima: #d7f04b;   /* only ever for dots */
 
   /* Linho with a little Noite in it */
-  --panel: #ece5da;  /* light panels, the message strip */
   --shade: #dfd8cd;  /* photo boxes while a photo is missing */
   --line: #d4cdc3;   /* hairlines */
   --muted: #4a4641;  /* quiet text: 7:1 on Linho */
 
   --font: 'Archivo Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --wide: 112%;      /* the width of the capitals */
+  --display: 'Archivo Black', 'Arial Black', 'Archivo Variable', sans-serif;
+  --serif: 'Instrument Serif', 'Times New Roman', Times, serif;
+  --wide: 112%;      /* the width of the small capitals */
 
   --gutter: clamp(1.25rem, 4vw, 2.5rem);
   --max: 74.75rem;   /* the content width on large screens */
   --gap: 1.75rem;
-  --space: 4.5rem;   /* between blocks */
+  --space: clamp(4.5rem, 3.6rem + 3vw, 6.5rem); /* above and below the content of a block */
 
-  /* The header's rows: the Noite line, the bar, the links (wide screens), the message strip */
+  /* The header's rows: the Noite line, the bar, the links (wide screens) */
   --top-h: 0.5rem;
   --bar-h: 3.75rem;
   --nav-h: 0rem;
-  --promo-h: 3.75rem;
 
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   color-scheme: light;
 }
 @media (min-width: 64rem) {
-  :root { --bar-h: 5rem; --nav-h: 3.25rem; --promo-h: 3.5rem; }
+  :root { --bar-h: 5rem; --nav-h: 3.25rem; }
 }
-:root.promo-closed { --promo-h: 0rem; }
 
 *,
 *::before,
@@ -54,7 +54,7 @@ html {
   background: var(--linho);
   scroll-behavior: smooth;
   /* links to a part of the page stop just below the header (once its row of links has folded) */
-  scroll-padding-top: calc(var(--top-h) + var(--bar-h) + var(--promo-h) + 1.5rem);
+  scroll-padding-top: calc(var(--top-h) + var(--bar-h));
 }
 
 body {
@@ -72,7 +72,7 @@ body {
 }
 
 /* The header stays on screen, so the page starts below it */
-main { display: block; padding-top: calc(var(--top-h) + var(--bar-h) + var(--nav-h) + var(--promo-h)); }
+main { display: block; padding-top: calc(var(--top-h) + var(--bar-h) + var(--nav-h)); }
 
 ::selection { background: var(--noite); color: var(--linho); }
 
@@ -85,16 +85,26 @@ button { font: inherit; color: inherit; }
 
 /* ── Type ──────────────────────────────────────────────── */
 
-/* Titles: small bold capitals, 20px on phones to 30px on large screens */
+/* Titles: heavy capitals, 32px on phones to 56px on large screens */
 .title,
 .page-title {
-  font-size: clamp(1.25rem, 0.95rem + 1.2vw, 1.875rem);
-  line-height: 1.25;
-  font-weight: 600;
-  font-stretch: var(--wide);
-  letter-spacing: 0.01em;
+  font-family: var(--display);
+  font-size: clamp(1.875rem, 1.3rem + 2.8vw, 3.5rem);
+  line-height: 1.02;
+  font-weight: 400; /* Archivo Black has one weight */
   text-transform: uppercase;
   text-wrap: balance;
+}
+
+/* The one line of a part in italics, 22px on phones to 32px on large screens */
+.accent {
+  font-family: var(--serif);
+  font-size: clamp(1.375rem, 1.15rem + 0.95vw, 2rem);
+  line-height: 1.2;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-wrap: pretty;
 }
 
 /* The line above a title ("The Circle"), section names in lists */
@@ -117,10 +127,16 @@ button { font: inherit; color: inherit; }
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
-.narrow { max-width: calc(46rem + 2 * var(--gutter)); }
 
-.block { margin-top: var(--space); }
-.block-title { margin-bottom: clamp(1.75rem, 3vw, 2.5rem); text-align: center; }
+/* A part of the page, and the title above its content */
+.block { padding-block: var(--space); }
+.block-head { display: grid; gap: 0.75rem; margin-bottom: clamp(2rem, 3.4vw, 3rem); }
+
+/* Blocks of colour. Quiet text and hairlines follow the colour underneath.
+   Noite on Sálvia is 4.8:1, so the text there is never lighter than that. */
+.on-noite { --line: #373632; --muted: #cbc4b9; background: var(--noite); color: var(--linho); }
+.on-salvia { --line: rgb(22 21 19 / 0.45); --muted: var(--noite); background: var(--salvia); color: var(--noite); font-weight: 400; }
+.on-areia { --line: rgb(22 21 19 / 0.3); background: var(--areia); color: var(--noite); }
 
 .visually-hidden {
   position: absolute !important;
@@ -177,6 +193,11 @@ a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1px
 .button:disabled { opacity: 0.55; cursor: progress; }
 @media (hover: hover) {
   .button:hover { background: transparent; color: var(--noite); }
+}
+/* on Noite the button is Ouro */
+.on-noite .button { border-color: var(--ouro); background: var(--ouro); color: var(--noite); }
+@media (hover: hover) {
+  .on-noite .button:hover { background: transparent; color: var(--ouro); }
 }
 
 /* Icon buttons: 44px square, the smallest comfortable target for a finger */
@@ -238,30 +259,38 @@ a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1px
 
 /* ── Inner pages ──────────────────────────────────────── */
 
-.page { padding-top: clamp(3rem, 7vw, 5rem); }
+.page { --column: 36rem; padding-block: clamp(3rem, 7vw, 5rem) var(--space); }
 .page-head {
   display: grid;
-  gap: 0.85rem;
-  justify-items: center;
-  max-width: 36rem;
+  gap: 0.9rem;
+  justify-items: start;
+  max-width: var(--column);
   margin: 0 auto clamp(2.5rem, 5vw, 3.5rem);
-  text-align: center;
 }
-.page-head .label + .page-title { margin-top: -0.25rem; }
 
-/* Thank-you pages and the 404: one short centred column */
-.thanks {
-  display: grid;
-  gap: 1rem;
-  justify-items: center;
-  max-width: 36rem;
-  text-align: center;
-}
+/* Thank-you pages and the 404: one short column */
+.thanks { display: grid; gap: 1rem; justify-items: start; max-width: calc(var(--column) + 2 * var(--gutter)); }
 
 /* ── Forms ────────────────────────────────────────────── */
 
-.form { display: grid; gap: 1.5rem; max-width: 36rem; margin-inline: auto; }
-.field { display: grid; gap: 0.45rem; }
+.form {
+  --field: var(--linho);
+  --field-line: var(--muted);
+  display: grid;
+  gap: 1.5rem;
+  max-width: 36rem;
+  margin-inline: auto;
+  container-type: inline-size;
+}
+.on-noite .form { --field: #24231f; --field-line: #736f67; }
+.field { display: grid; gap: 0.45rem; align-content: end; }
+.choices { display: grid; }
+/* two short questions side by side, where there is room */
+.field-row { display: grid; gap: 1.5rem; }
+@container (min-width: 30rem) {
+  .field-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.25rem; }
+  .choices { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 1.25rem; }
+}
 .field > label,
 .field > legend { font-size: 0.875rem; font-weight: 600; }
 .hint { font-size: 0.8125rem; color: var(--muted); margin-top: -0.2rem; }
@@ -273,10 +302,10 @@ a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1px
   width: 100%;
   min-height: 3rem;
   padding: 0.75rem 0.9rem;
-  border: 1px solid var(--muted);
+  border: 1px solid var(--field-line);
   border-radius: 0;
-  background: var(--linho);
-  color: var(--noite);
+  background: var(--field);
+  color: inherit;
   font: inherit;
   font-size: 1rem;
   font-weight: 400;
@@ -285,15 +314,15 @@ a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1px
 }
 .form textarea { min-height: 9rem; resize: vertical; line-height: 1.5; }
 .form input:focus-visible,
-.form textarea:focus-visible { outline: 2px solid var(--noite); outline-offset: 0; border-color: var(--noite); }
+.form textarea:focus-visible { outline: 2px solid currentColor; outline-offset: 0; border-color: currentColor; }
 .form input:user-invalid,
 .form textarea:user-invalid { border-color: var(--poente); border-width: 2px; }
 
 fieldset.field { border: 0; padding: 0; margin: 0; min-width: 0; }
 fieldset.field legend { padding: 0; margin-bottom: 0.35rem; }
-.choices { display: grid; }
 .choice { display: flex; align-items: center; gap: 0.75rem; min-height: 2.75rem; cursor: pointer; }
 .choice input { width: 1.2rem; height: 1.2rem; margin: 0; flex: none; accent-color: var(--noite); }
+.on-noite .choice input { accent-color: var(--ouro); color-scheme: dark; }
 .consent { align-items: flex-start; padding-block: 0.4rem; }
 .consent input { margin-top: 0.1rem; }
 .form .button { width: 100%; margin-top: 0.5rem; }
@@ -301,6 +330,7 @@ fieldset.field legend { padding: 0; margin-bottom: 0.35rem; }
 .form-error { font-weight: 600; border-left: 3px solid var(--poente); padding-left: 0.75rem; }
 @media (min-width: 48rem) {
   .form .button { width: auto; justify-self: start; }
+  .on-noite .form .button { width: 100%; }
 }
 
 /* ── Phone menu open: the page behind it stays still ─── */

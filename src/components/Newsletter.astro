@@ -1,0 +1,66 @@
+---
+// The Seventh: the sign-up for the monthly letter, on Sálvia, just above the footer's Noite block.
+// It needs its own Formspree address (forms > newsletter in content/site.yaml). Until it has one,
+// it only shows in `npm run dev`, so a form that goes nowhere is never on the live site.
+import { copy, link, site } from '../lib/content';
+
+const n = copy('en').newsletter;
+const endpoint = site.forms.newsletter;
+---
+{(endpoint || import.meta.env.DEV) && (
+  <section class="seventh on-salvia" aria-labelledby="seventh-title">
+    <div class="wrap seventh-grid">
+      <div class="seventh-text">
+        <h2 id="seventh-title" class="title">{n.title}</h2>
+        <p class="accent">{n.accent}</p>
+      </div>
+      <div>
+        <form class="seventh-form" name="newsletter" method="POST" action={endpoint} data-formspree data-done="seventh-done">
+          <input type="hidden" name="_subject" value="New subscriber · The Seventh" />
+          <p class="honeypot" aria-hidden="true"><label>Leave this empty <input name="_gotcha" tabindex="-1" autocomplete="off" /></label></p>
+          <label class="label" for="seventh-email">{n.email}</label>
+          <div class="seventh-row">
+            <input id="seventh-email" name="email" type="email" autocomplete="email" required />
+            <button class="button" type="submit">{n.submit}</button>
+          </div>
+          <p class="seventh-note">{n.consent_before} <a href={link('/privacy/')}>{n.consent_link}</a>.</p>
+          <p class="form-error" data-form-error hidden>Something went wrong. Please try again, or write to us by email.</p>
+        </form>
+        <p class="accent" id="seventh-done" tabindex="-1" hidden>{n.thanks}</p>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .seventh { padding-block: clamp(3rem, 5vw, 4.5rem); }
+  .seventh-grid { display: grid; gap: 1.75rem; }
+  .seventh-text { display: grid; gap: 0.75rem; align-content: start; }
+  .seventh-text .accent { max-width: 34rem; }
+  .seventh-form { display: grid; gap: 0.5rem; }
+  .seventh-row { display: grid; gap: 0.75rem; }
+  .seventh-row input {
+    width: 100%;
+    min-width: 0;
+    min-height: 3rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--noite);
+    border-radius: 0;
+    background: var(--linho);
+    color: var(--noite);
+    font: inherit;
+    font-size: 1rem; /* 16px, so the iPhone doesn't zoom in */
+    font-weight: 400;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .seventh-row input:focus-visible { outline: 2px solid var(--noite); outline-offset: 2px; }
+  .seventh-note { font-size: 0.8125rem; font-weight: 400; }
+  #seventh-done:focus { outline: none; }
+  @media (min-width: 30rem) {
+    .seventh-row { grid-template-columns: minmax(0, 1fr) auto; }
+  }
+  @media (min-width: 64rem) {
+    .seventh-grid { grid-template-columns: 1fr minmax(0, 28rem); gap: 4rem; align-items: center; }
+  }
+</style>

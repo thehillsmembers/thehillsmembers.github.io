@@ -11,17 +11,36 @@ export function copy(lang: Lang = 'en') {
   return data[lang];
 }
 
+/** A Formspree address, from the address itself or just its ID. */
+function formspree(value: unknown): string {
+  const text = String(value ?? '').trim();
+  return !text || /^https?:/.test(text) ? text : `https://formspree.io/f/${text}`;
+}
+
 export const site = {
   instagramHandle: data.instagram_handle as string,
   instagramUrl: data.instagram_url as string,
+  /** The founder's own pages. An empty one is not linked. */
+  founder: { instagram: (data.founder_instagram ?? '') as string, linkedin: (data.founder_linkedin ?? '') as string },
   cities: (data.cities ?? []) as string[],
-  /** Formspree addresses for the forms. Empty = use Netlify Forms. */
-  forms: { apply: (data.forms?.apply ?? '') as string, partners: (data.forms?.partners ?? '') as string },
+  /** Formspree addresses for the forms. */
+  forms: {
+    apply: formspree(data.forms?.apply),
+    partners: formspree(data.forms?.partners),
+    newsletter: formspree(data.forms?.newsletter),
+  },
   /** The photo places, in page order, each with the description of its photo. */
   photos: (data.photos ?? {}) as Record<string, string>,
-  /** Which side of a photo stays in view when its place crops it: top, bottom, left or right. */
+  /** Which part of a photo stays in view when its place crops it: top, bottom, left, right or "35% 50%". */
   photoFocus: (data.photo_focus ?? {}) as Record<string, string>,
 };
+
+// A form without its address would lose what people write, so it never goes live
+if (import.meta.env.PROD) {
+  for (const form of ['apply', 'partners'] as const) {
+    if (!site.forms[form]) throw new Error(`The ${form} form has no address: set forms > ${form} in content/site.yaml.`);
+  }
+}
 
 // ── Agenda ────────────────────────────────────────────────
 
@@ -63,6 +82,11 @@ const BASE = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '/');
 /** Turns a site path like "/apply/" or "/#agenda" into one that works wherever the site is hosted. */
 export function link(path: string): string {
   return path.startsWith('/') ? BASE + path.slice(1) : path;
+}
+
+/** "Apply": on the home page it scrolls to the form there, on the others it opens /apply/. */
+export function applyLink(pathname: string): string {
+  return pathname === BASE ? '#apply' : link('/apply/');
 }
 
 /** A link written in the YAML: a page of the site ("/apply/"), or the word instagram. */

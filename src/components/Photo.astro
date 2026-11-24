@@ -19,7 +19,8 @@ interface Props {
   sizes: string;
   eager?: boolean;
   /** Where the crop centres, e.g. "50% 30%" to keep faces near the top in view. Without it,
-   *  photo_focus in content/site.yaml decides (top, bottom, left or right), else the middle. */
+   *  photo_focus in content/site.yaml decides (top, bottom, left, right or two numbers like that),
+   *  else the middle. */
   position?: string;
   class?: string;
   [attribute: `data-${string}`]: unknown;

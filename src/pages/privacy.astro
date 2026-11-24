@@ -4,7 +4,7 @@ import { copy } from '../lib/content';
 const p = copy('en').privacy;
 ---
 <Base title={p.meta_title} description={p.meta_description}>
-  <section class="page">
+  <section class="page policy-page">
     <div class="wrap">
       <div class="page-head">
         <p class="label">{p.label}</p>
@@ -24,6 +24,7 @@ const p = copy('en').privacy;
 </Base>
 
 <style>
-  .policy { display: grid; gap: 2rem; max-width: 40rem; margin-inline: auto; }
+  .policy-page { --column: 40rem; }
+  .policy { display: grid; gap: 2rem; max-width: var(--column); margin-inline: auto; }
   .policy section { display: grid; gap: 0.75rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
 </style>

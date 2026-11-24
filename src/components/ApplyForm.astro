@@ -1,0 +1,68 @@
+---
+// The application form. It is on its own page (/apply/) and on the home page, there on a Noite
+// block. The same questions, the same Formspree address and the same thank-you page in both.
+import { copy, link, site } from '../lib/content';
+
+const t = copy('en');
+const a = t.apply;
+const f = a.fields;
+const formats: string[] = t.experiences.items.map((e: { name: string }) => e.name);
+---
+<form class="form" name="apply" method="POST" action={site.forms.apply} data-formspree data-thanks={link('/apply/thanks/')}>
+  <input type="hidden" name="_subject" value="New application · Seven Hills" />
+  <p class="honeypot" aria-hidden="true"><label>Leave this empty <input name="_gotcha" tabindex="-1" autocomplete="off" /></label></p>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="name">{f.name} *</label>
+      <input id="name" name="name" type="text" autocomplete="name" required />
+    </div>
+    <div class="field">
+      <label for="email">{f.email} *</label>
+      <input id="email" name="email" type="email" autocomplete="email" required />
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label for="city">{f.city} *</label>
+      <input id="city" name="city" type="text" autocomplete="address-level2" required />
+    </div>
+    <div class="field">
+      <label for="social">{f.social} *</label>
+      <p class="hint" id="social-hint">{f.social_hint}</p>
+      <input id="social" name="instagram_or_linkedin" type="text" aria-describedby="social-hint" autocapitalize="off" required />
+    </div>
+  </div>
+  <div class="field">
+    <label for="what">{f.what} *</label>
+    <p class="hint" id="what-hint">{f.what_hint}</p>
+    <input id="what" name="what_you_do" type="text" aria-describedby="what-hint" maxlength="140" required />
+  </div>
+  <div class="field">
+    <label for="who">{f.who} *</label>
+    <textarea id="who" name="who_you_are" rows="6" required></textarea>
+  </div>
+  <div class="field">
+    <label for="bring">{f.bring} *</label>
+    <textarea id="bring" name="what_you_would_bring" rows="5" required></textarea>
+  </div>
+  <div class="field">
+    <label for="referred">{f.referred}</label>
+    <p class="hint" id="referred-hint">{f.referred_hint}</p>
+    <input id="referred" name="referred_by" type="text" aria-describedby="referred-hint" />
+  </div>
+  <fieldset class="field">
+    <legend>{f.experiences}</legend>
+    <div class="choices">
+      {formats.map((name) => (
+        <label class="choice"><input type="checkbox" name="experiences[]" value={name} /> <span>{name}</span></label>
+      ))}
+    </div>
+  </fieldset>
+  <label class="choice consent">
+    <input type="checkbox" name="consent" value="yes" required />
+    <span>{f.consent_before} <a href={link('/privacy/')}>{f.consent_link}</a>. *</span>
+  </label>
+  <p class="form-error" data-form-error hidden>Something went wrong. Please try again, or write to us by email.</p>
+  <button class="button" type="submit">{a.submit}</button>
+</form>

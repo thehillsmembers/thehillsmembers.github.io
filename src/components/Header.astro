@@ -2,17 +2,16 @@
 // The header, in the manner of a maison's website. It stays at the top of the screen:
 // - a thin Noite line, then a bar with the wordmark in the middle. On phones: the menu and
 //   Instagram on the left, Apply on the right. On wide screens: Instagram and Apply on the right,
-// - on wide screens, a centred row of links underneath, which folds away once the page scrolls,
-// - a strip of short messages that take turns. The cross closes it for the rest of the visit.
+// - on wide screens, a centred row of links underneath, which folds away once the page scrolls.
 // The Agenda link only shows while there are upcoming dates. data-agenda-until carries the last
 // one, so the script can drop the link once that day has passed.
-import { copy, link, site, to, upcoming } from '../lib/content';
+import { applyLink, copy, link, site, upcoming } from '../lib/content';
 const t = copy('en');
 const events = upcoming();
 type Link = { label: string; href: string };
 const links = (t.nav.links as Link[]).filter((l) => events.length > 0 || !l.href.endsWith('#agenda'));
 const agendaUntil = events.length ? events[events.length - 1].date : undefined;
-const promo = (t.promo?.items ?? []) as { text: string; link?: string; href?: string }[];
+const apply = applyLink(Astro.url.pathname);
 const igLabel = `Instagram, ${site.instagramHandle}`;
 ---
 <header class="site-header" data-header data-agenda-until={agendaUntil}>
@@ -27,7 +26,7 @@ const igLabel = `Instagram, ${site.instagramHandle}`;
         <nav class="menu-panel" aria-label="Main">
           <ul>
             {links.map((l) => <li><a href={link(l.href)}>{l.label}</a></li>)}
-            <li><a href={link('/apply/')}>{t.nav.apply}</a></li>
+            <li><a href={apply}>{t.nav.apply}</a></li>
             <li><a href={site.instagramUrl} rel="noopener">Instagram</a></li>
           </ul>
         </nav>
@@ -45,7 +44,7 @@ const igLabel = `Instagram, ${site.instagramHandle}`;
       <a class="icon-button ig ig-wide" href={site.instagramUrl} rel="noopener" aria-label={igLabel}>
         <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.75" y="2.75" width="14.5" height="14.5" rx="4" /><circle cx="10" cy="10" r="3.4" /><circle class="dot" cx="14.5" cy="5.5" r="0.9" /></svg>
       </a>
-      <a class="apply" href={link('/apply/')}>{t.nav.apply}</a>
+      <a class="apply" href={apply}>{t.nav.apply}</a>
     </div>
   </div>
 
@@ -54,24 +53,6 @@ const igLabel = `Instagram, ${site.instagramHandle}`;
       {links.map((l) => <li><a href={link(l.href)}>{l.label}</a></li>)}
     </ul>
   </nav>
-
-  {promo.length > 0 && (
-    <div class="promo" data-promo>
-      <div class="wrap promo-inner">
-        <ul class="promo-list">
-          {promo.map((p, i) => (
-            <li class:list={['promo-item', { 'is-active': i === 0 }]} data-promo-item>
-              {p.text}
-              {p.link && p.href && <a href={to(p.href)}>{p.link}</a>}
-            </li>
-          ))}
-        </ul>
-        <button class="icon-button promo-close" type="button" data-promo-close aria-label={t.promo.close}>
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10m0-10L5 15" /></svg>
-        </button>
-      </div>
-    </div>
-  )}
 </header>
 
 <style>
@@ -143,41 +124,6 @@ const igLabel = `Instagram, ${site.instagramHandle}`;
   /* ── The row of links (wide screens) ── */
   .nav-row { display: none; }
 
-  /* ── The message strip ── */
-  .promo { background: var(--panel); }
-  .promo-inner {
-    height: var(--promo-h);
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .promo-list { display: grid; }
-  .promo-item {
-    grid-area: 1 / 1;
-    align-self: center;
-    font-size: 0.6875rem;
-    line-height: 1.45;
-    color: var(--muted);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.6s ease, visibility 0s linear 0.6s;
-  }
-  .promo-item.is-active { opacity: 1; visibility: visible; transition: opacity 0.6s ease 0.2s, visibility 0s; }
-  .promo-item a {
-    margin-left: 0.35rem;
-    color: var(--noite);
-    font-weight: 600;
-    font-stretch: var(--wide);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    text-underline-offset: 0.3em;
-    white-space: nowrap;
-  }
-  .promo-close { margin-right: -0.7rem; }
-  :global(:root.promo-closed) .promo { display: none; }
-  :global(html:not(.js)) .promo-close { display: none; }
-
   @media (min-width: 64rem) {
     .bar-start { margin-left: 0; }
     .menu,
@@ -212,14 +158,11 @@ const igLabel = `Instagram, ${site.instagramHandle}`;
     }
     .nav-row a:hover,
     .nav-row a:focus-visible { background-size: 100% 1px; }
-    /* once the page scrolls, only the bar and the strip stay */
+    /* once the page scrolls, only the bar stays */
     .site-header.is-folded .nav-row {
       height: 0;
       visibility: hidden;
       transition: height 0.45s var(--ease), visibility 0s linear 0.45s;
     }
-
-    .promo-item { font-size: 0.8125rem; text-align: center; }
-    .promo-list { padding-left: 2.75rem; }
   }
 </style>

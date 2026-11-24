@@ -1,17 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { copy, site, link } from '../../lib/content';
-const t = copy('en');
-const a = t.apply;
-const f = a.fields;
-const formats: string[] = t.experiences.items.map((e: { name: string }) => e.name);
-const endpoint = site.forms.apply;
-const thanks = link('/apply/thanks/');
-// Formspree when its address is set in content/site.yaml, otherwise Netlify Forms.
-const formAttrs = endpoint
-  ? { action: endpoint, 'data-formspree': '', 'data-thanks': thanks }
-  : { action: thanks, 'data-netlify': 'true', 'netlify-honeypot': 'bot-field' };
-const trap = endpoint ? '_gotcha' : 'bot-field';
+import ApplyForm from '../../components/ApplyForm.astro';
+import { copy } from '../../lib/content';
+const a = copy('en').apply;
 ---
 <Base title={a.meta_title} description={a.meta_description}>
   <section class="page">
@@ -19,65 +10,10 @@ const trap = endpoint ? '_gotcha' : 'bot-field';
       <div class="page-head">
         <p class="label">{a.label}</p>
         <h1 class="page-title">{a.title}</h1>
-        <p>{a.intro}</p>
+        <p class="accent">{a.intro}</p>
         <p class="hint">{a.required_note}</p>
       </div>
-
-      <!-- Submissions go to Formspree (if set in content/site.yaml) or Netlify Forms -->
-      <form class="form" name="apply" method="POST" {...formAttrs}>
-        {endpoint ? <input type="hidden" name="_subject" value="New application · Seven Hills" /> : <input type="hidden" name="form-name" value="apply" />}
-        <p class="honeypot" aria-hidden="true"><label>Leave this empty <input name={trap} tabindex="-1" autocomplete="off" /></label></p>
-
-        <div class="field">
-          <label for="name">{f.name} *</label>
-          <input id="name" name="name" type="text" autocomplete="name" required />
-        </div>
-        <div class="field">
-          <label for="email">{f.email} *</label>
-          <input id="email" name="email" type="email" autocomplete="email" required />
-        </div>
-        <div class="field">
-          <label for="city">{f.city} *</label>
-          <input id="city" name="city" type="text" autocomplete="address-level2" required />
-        </div>
-        <div class="field">
-          <label for="social">{f.social} *</label>
-          <p class="hint" id="social-hint">{f.social_hint}</p>
-          <input id="social" name="instagram_or_linkedin" type="text" aria-describedby="social-hint" autocapitalize="off" required />
-        </div>
-        <div class="field">
-          <label for="what">{f.what} *</label>
-          <p class="hint" id="what-hint">{f.what_hint}</p>
-          <input id="what" name="what_you_do" type="text" aria-describedby="what-hint" maxlength="140" required />
-        </div>
-        <div class="field">
-          <label for="who">{f.who} *</label>
-          <textarea id="who" name="who_you_are" rows="6" required></textarea>
-        </div>
-        <div class="field">
-          <label for="bring">{f.bring} *</label>
-          <textarea id="bring" name="what_you_would_bring" rows="5" required></textarea>
-        </div>
-        <div class="field">
-          <label for="referred">{f.referred}</label>
-          <p class="hint" id="referred-hint">{f.referred_hint}</p>
-          <input id="referred" name="referred_by" type="text" aria-describedby="referred-hint" />
-        </div>
-        <fieldset class="field">
-          <legend>{f.experiences}</legend>
-          <div class="choices">
-            {formats.map((name) => (
-              <label class="choice"><input type="checkbox" name="experiences[]" value={name} /> <span>{name}</span></label>
-            ))}
-          </div>
-        </fieldset>
-        <label class="choice consent">
-          <input type="checkbox" name="consent" value="yes" required />
-          <span>{f.consent_before} <a href={link('/privacy/')}>{f.consent_link}</a>. *</span>
-        </label>
-        <p class="form-error" data-form-error hidden>Something went wrong. Please try again, or write to us by email.</p>
-        <button class="button" type="submit">{a.submit}</button>
-      </form>
+      <ApplyForm />
     </div>
   </section>
 </Base>

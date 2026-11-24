@@ -1,13 +1,16 @@
 ---
-// The footer: three short notes on Linho, then Noite with the wordmark in Ouro, four columns of
-// links, and a last line with the city, Instagram and the year.
-import { copy, link, site, to } from '../lib/content';
+// The footer: three short notes on Linho, the newsletter on Sálvia, then Noite with the wordmark
+// in Ouro, four columns of links, and a last line with the city, Instagram and the year.
+import Newsletter from './Newsletter.astro';
+import { applyLink, copy, link, site, to } from '../lib/content';
 const t = copy('en');
 const f = t.footer;
 type L = { label: string; href: string };
 const notes = t.prefooter as { title: string; text: string; link: string; href: string }[];
 const columns = f.columns as { title: string; links: L[] }[];
 const year = new Date().getFullYear();
+// "Apply" scrolls to the form when it is on the same page
+const go = (href: string) => (href === '/apply/' ? applyLink(Astro.url.pathname) : to(href));
 ---
 <footer class="site-footer">
   <div class="notes">
@@ -16,11 +19,13 @@ const year = new Date().getFullYear();
         <div class="note">
           <h2 class="label">{n.title}</h2>
           <p>{n.text}</p>
-          <a class="cta" href={to(n.href)}>{n.link}</a>
+          <a class="cta" href={go(n.href)}>{n.link}</a>
         </div>
       ))}
     </div>
   </div>
+
+  <Newsletter />
 
   <div class="dark">
     <div class="wrap">
@@ -32,7 +37,7 @@ const year = new Date().getFullYear();
           <div class="col">
             <h2 class="col-title">{c.title}</h2>
             <ul>
-              {c.links.map((l) => <li><a href={to(l.href)}>{l.label}</a></li>)}
+              {c.links.map((l) => <li><a href={go(l.href)}>{l.label}</a></li>)}
             </ul>
           </div>
         ))}
@@ -50,14 +55,13 @@ const year = new Date().getFullYear();
 <script is:inline>document.querySelectorAll('[data-year]').forEach(function (el) { el.textContent = new Date().getFullYear(); });</script>
 
 <style>
-  .site-footer { margin-top: var(--space); }
-
   /* ── Three notes on Linho: stacked with hairlines on phones, three columns on wide screens ── */
   .notes { border-top: 1px solid var(--line); }
   .note {
     display: grid;
     gap: 0.45rem;
     justify-items: start;
+    align-content: start;
     padding-block: 1.6rem;
     border-bottom: 1px solid var(--line);
   }

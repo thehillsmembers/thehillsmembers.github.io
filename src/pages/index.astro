@@ -1,9 +1,11 @@
 ---
-// The home page, in the manner of a maison's website:
-// hero (photo + light panel) · a carousel of the five experiences · two editorial blocks
-// (photo beside centred text) · the agenda, while there are dates · partners (photo + panel)
-// · the cities as photo tiles. Photo places are numbered in content/site.yaml, under photos.
+// The home page: a maison's layout, with colour blocks and heavy titles.
+// hero (photo + text, Linho) · the five experiences in a carousel (Noite) · the agenda, while
+// there are dates · The Circle (Linho) · How to join (Sálvia) · Partners and the founder (Areia)
+// · the cities · the application form, on a Noite block. The newsletter is in the footer.
+// Each part has one line in italics (accent). Photo places are listed in content/site.yaml.
 import Base from '../layouts/Base.astro';
+import ApplyForm from '../components/ApplyForm.astro';
 import Photo from '../components/Photo.astro';
 import { copy, site, upcoming, shortDate, link, slug } from '../lib/content';
 
@@ -11,45 +13,52 @@ const t = copy('en');
 const events = upcoming();
 const pad = (n: number) => String(n).padStart(2, '0');
 
-type Item = { name: string; line: string; kind?: string };
+type Item = { name: string; line: string; label?: string; dots?: boolean };
 const experiences = t.experiences.items as Item[];
-// Three cards at a time on wide screens, two on phones (the script sets the real count)
-const pages = Math.ceil(experiences.length / 3);
+// Four cards at a time on large screens, three on tablets, two on phones (the script sets the real count)
+const pages = Math.ceil(experiences.length / 4);
+
+const founderLinks = [
+  { name: 'Instagram', href: site.founder.instagram },
+  { name: 'LinkedIn', href: site.founder.linkedin },
+].filter((l) => l.href);
 ---
 <Base>
-  <!-- HERO · the photo, then a light panel (side by side on wide screens) -->
-  <section class="split hero" aria-labelledby="hero-title">
+  <!-- HERO · the photo, and the text on Linho (side by side on wide screens) -->
+  <section class="hero" aria-labelledby="hero-title">
     <Photo name="hero" ratio="16 / 10" mobileRatio="15 / 16" sizes="(min-width: 48rem) 50vw, 100vw" eager />
-    <div class="split-panel">
+    <div class="hero-panel">
       <p class="label">{t.hero.label}</p>
-      <h1 id="hero-title" class="title">{t.hero.title}</h1>
-      <p class="split-text">{t.hero.text}</p>
-      <a class="cta" href={link('/apply/')}>{t.hero.cta}</a>
+      <h1 id="hero-title" class="title hero-title">{t.hero.title.map((word: string) => <Fragment><span>{word}</span>{' '}</Fragment>)}</h1>
+      <p class="accent">{t.hero.accent}</p>
+      <a class="cta" href="#apply">{t.hero.cta}</a>
     </div>
   </section>
 
-  <!-- EXPERIENCES · a carousel of cards -->
-  <section id="experiences" class="block" aria-labelledby="exp-title">
+  <!-- EXPERIENCES · Noite · a carousel of cards -->
+  <section id="experiences" class="block on-noite" aria-labelledby="exp-title">
     <div class="wrap">
-      <h2 id="exp-title" class="title block-title">{t.experiences.title}</h2>
       <div class="carousel" data-carousel>
+        <div class="block-head">
+          <h2 id="exp-title" class="title">{t.experiences.title}</h2>
+          <p class="accent">{t.experiences.accent}</p>
+        </div>
         <ul class="track" data-track tabindex="0" aria-label={t.experiences.title}>
           {experiences.map((e) => (
             <li class="card">
-              <div class="card-media">
-                <Photo name={slug(e.name)} ratio="4 / 5" sizes="(min-width: 64rem) 18rem, (min-width: 48rem) 30vw, 46vw" />
-                {e.kind && <span class="badge">{e.kind}</span>}
-              </div>
+              <Photo name={slug(e.name)} ratio="4 / 5" sizes="(min-width: 75rem) 17.5rem, (min-width: 48rem) 30vw, 46vw" />
+              {e.label && <p class="card-label"><span>{e.label.split(' · ').map((part) => <Fragment><span>{part}</span>{' '}</Fragment>)}</span></p>}
               <h3 class="card-name">{e.name}</h3>
               <p class="card-line">{e.line}</p>
+              {e.dots && <div class="seven-dots" aria-hidden="true">{Array.from({ length: 7 }, () => <i />)}</div>}
             </li>
           ))}
         </ul>
         <div class="pager">
+          <p class="pager-count" data-count aria-live="polite">1 / {pages}</p>
           <button class="icon-button pager-prev" type="button" data-prev aria-label={t.experiences.previous} disabled>
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5" /></svg>
           </button>
-          <p class="pager-count" data-count aria-live="polite">1 / {pages}</p>
           <button class="icon-button pager-next" type="button" data-next aria-label={t.experiences.next}>
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5" /></svg>
           </button>
@@ -61,9 +70,12 @@ const pages = Math.ceil(experiences.length / 3);
   <!-- AGENDA · only there while content/site.yaml has upcoming dates -->
   {events.length > 0 && (
     <section id="agenda" class="block agenda" aria-labelledby="agenda-title" data-agenda>
-      <div class="wrap narrow">
-        <p class="label agenda-label">{t.agenda.label}</p>
-        <h2 id="agenda-title" class="title block-title">{t.agenda.title}</h2>
+      <div class="wrap">
+        <div class="block-head">
+          <p class="label">{t.agenda.label}</p>
+          <h2 id="agenda-title" class="title">{t.agenda.title}</h2>
+          <p class="accent">{t.agenda.accent}</p>
+        </div>
         <ol class="events">
           {events.map((e) => (
             <li class="event" data-event-date={e.date}>
@@ -75,7 +87,6 @@ const pages = Math.ceil(experiences.length / 3);
                 {e.note && <p class="event-note">{e.note}</p>}
                 <p class="event-meta">
                   {[e.weekday, e.time ? String(e.time).replace(':', 'H') : null, e.city].filter(Boolean).join(' · ')}
-                  <br />{t.agenda.location_note}
                 </p>
               </div>
             </li>
@@ -88,106 +99,138 @@ const pages = Math.ceil(experiences.length / 3);
     </section>
   )}
 
-  <!-- THE CIRCLE · centred text, the photo beside it -->
+  <!-- THE CIRCLE · Linho · the text, the photo beside it -->
   <section id="circle" class="block" aria-labelledby="circle-title">
     <div class="wrap editorial">
       <div class="ed-text">
         <p class="label">{t.circle.label}</p>
         <h2 id="circle-title" class="title">{t.circle.title}</h2>
-        <p>{t.circle.text}</p>
+        <p class="accent">{t.circle.accent}</p>
+        <p class="ed-body">{t.circle.text}</p>
         <p class="values">{t.circle.values}</p>
-        <a class="cta" href={link('/#join')}>{t.circle.cta}</a>
+        <a class="cta" href="#join">{t.circle.cta}</a>
       </div>
-      <Photo name="circle" ratio="3 / 4" class="ed-media" sizes="(min-width: 48rem) 30rem, 100vw" />
+      <Photo name="circle" ratio="3 / 4" class="ed-media" sizes="(min-width: 48rem) 32rem, 100vw" />
     </div>
   </section>
 
-  <!-- HOW TO JOIN · the photo, centred text beside it -->
-  <section id="join" class="block" aria-labelledby="join-title">
+  <!-- HOW TO JOIN · Sálvia · the photo, the three steps beside it -->
+  <section id="join" class="block on-salvia" aria-labelledby="join-title">
     <div class="wrap editorial is-reverse">
       <div class="ed-text">
         <p class="label">{t.join.label}</p>
         <h2 id="join-title" class="title">{t.join.title}</h2>
+        <p class="accent">{t.join.accent}</p>
         <ol class="steps">
           {t.join.steps.map((s: Item, i: number) => (
             <li>
               <span class="step-num">{pad(i + 1)}</span>
-              <h3 class="step-name">{s.name}</h3>
+              <h3 class="item-name">{s.name}</h3>
               <p>{s.line}</p>
             </li>
           ))}
         </ol>
-        <a class="cta" href={link('/apply/')}>{t.join.cta}</a>
+        <a class="cta" href="#apply">{t.join.cta}</a>
       </div>
-      <Photo name="join" ratio="4 / 5" class="ed-media" sizes="(min-width: 48rem) 30rem, 100vw" />
+      <Photo name="join" ratio="4 / 5" class="ed-media" sizes="(min-width: 48rem) 32rem, 100vw" />
     </div>
   </section>
 
-  <!-- PARTNERS · the photo, then a light panel (side by side on wide screens) -->
-  <section id="partners" class="split partners" aria-labelledby="partners-title">
-    <Photo name="partners" ratio="16 / 10" mobileRatio="15 / 16" sizes="(min-width: 48rem) 50vw, 100vw" />
-    <div class="split-panel">
+  <!-- PARTNERS · Areia · the photo, the partners, and the founder next to them -->
+  <div id="partners" class="trio on-areia">
+    <Photo name="partners" ratio="4 / 5" mobileRatio="15 / 16" class="trio-photo" sizes="(min-width: 75rem) 40vw, (min-width: 48rem) 50vw, 100vw" />
+    <section class="trio-part" aria-labelledby="partners-title">
       <p class="label">{t.partners.label}</p>
       <h2 id="partners-title" class="title">{t.partners.title}</h2>
+      <p class="accent">{t.partners.accent}</p>
       <ul class="types">
         {t.partners.types.map((p: Item) => (
           <li>
-            <h3 class="type-name">{p.name}</h3>
+            <h3 class="item-name">{p.name}</h3>
             <p>{p.line}</p>
           </li>
         ))}
       </ul>
       <a class="cta" href={link('/partners/')}>{t.partners.cta}</a>
-    </div>
-  </section>
+    </section>
+    <section id="founder" class="trio-part founder" aria-labelledby="founder-title">
+      <p class="label">{t.founder.label}</p>
+      <h2 id="founder-title" class="title">{t.founder.name}</h2>
+      <div class="founder-bio">
+        {t.founder.bio.map((line: string) => <p>{line}</p>)}
+      </div>
+      {founderLinks.length > 0 && (
+        <ul class="founder-links">
+          {founderLinks.map((l) => <li><a class="cta" href={l.href} rel="noopener">{l.name}</a></li>)}
+        </ul>
+      )}
+    </section>
+  </div>
 
-  <!-- CITIES · one photo tile per city -->
+  <!-- CITIES · Linho · a photo per city, and the line about the ones to come -->
   <section id="cities" class="block" aria-labelledby="cities-title">
-    <div class="wrap">
-      <h2 id="cities-title" class="title block-title">{t.cities.title}</h2>
+    <div class="wrap cities">
+      <h2 id="cities-title" class="title">{t.cities.title}</h2>
       <ul class="tiles">
         {site.cities.map((c) => (
           <li class="tile">
-            <Photo name={slug(c)} ratio="16 / 10" sizes="(min-width: 48rem) 37rem, 100vw" />
+            <Photo name={slug(c)} ratio="16 / 10" sizes="(min-width: 64rem) 46rem, 100vw" />
             <h3 class="label">{c}</h3>
           </li>
         ))}
       </ul>
-      <p class="more">{t.cities.more}</p>
+      <p class="accent">{t.cities.accent}</p>
+    </div>
+  </section>
+
+  <!-- APPLY · the form, on a Noite block (it is also on its own page, /apply/) -->
+  <section id="apply" class="block apply" aria-labelledby="apply-title">
+    <div class="wrap apply-grid">
+      <div class="apply-text">
+        <p class="label">{t.apply.label}</p>
+        <h2 id="apply-title" class="title">{t.apply.home_title}</h2>
+        <p class="accent">{t.apply.home_accent}</p>
+        <p class="hint">{t.apply.required_note}</p>
+      </div>
+      <div class="apply-block on-noite">
+        <ApplyForm />
+      </div>
     </div>
   </section>
 </Base>
 
 <style>
-  /* ── Split: a photo and a light panel (hero, partners). Stacked on phones. ── */
-  .split { display: grid; background: var(--panel); }
-  .split-panel {
+  /* ── Hero. Stacked on phones; two equal halves on wider screens, and when the text is taller
+     than the photo's shape, the photo grows with it (cropped) ── */
+  .hero { display: grid; }
+  .hero-panel {
     display: grid;
-    justify-items: center;
+    justify-items: start;
     align-content: center;
-    gap: 0.7rem;
-    padding: 1.75rem var(--gutter) 1.6rem;
-    text-align: center;
+    gap: 0.9rem;
+    padding: 2rem var(--gutter) 2.75rem;
   }
-  .split-panel > * { max-width: 30rem; }
-  .split-panel .cta { margin-top: 0.15rem; }
-  .partners { margin-top: var(--space); }
+  .hero-title { font-size: clamp(2.25rem, 12vw, 3.5rem); line-height: 0.98; }
+  .hero-title span { display: block; }
   @media (min-width: 48rem) {
-    /* two equal halves; when the text is taller than the photo's shape, the photo grows
-       with it (cropped), instead of pushing the text aside */
-    .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-    .split :global(.photo) { width: 100%; height: 100%; }
-    .split-panel { gap: 0.9rem; padding: 3rem clamp(2rem, 5vw, 4rem); }
+    .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .hero :global(.photo) { width: 100%; height: 100%; }
+    .hero-panel { gap: 1.1rem; padding: 3rem clamp(2rem, 5vw, 4.5rem); }
+    .hero-title { font-size: clamp(2.75rem, 5.9vw, 5rem); }
+    .hero-panel .accent { max-width: 30rem; }
   }
 
-  /* ── Carousel: two cards at a time on phones, three on wider screens ── */
-  .carousel { position: relative; container-type: inline-size; max-width: 58rem; margin-inline: auto; }
+  /* ── Carousel: two cards at a time on phones, three on tablets, four on large screens.
+     The rows of a card line up with its neighbours' (label with label, name with name) ── */
+  .carousel { display: grid; grid-template-columns: minmax(0, 1fr); }
   .track {
     --card-gap: 1.125rem;
+    --per-page: 2;
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: calc((100% - var(--card-gap)) / 2);
-    gap: var(--card-gap);
+    grid-auto-columns: calc((100% - (var(--per-page) - 1) * var(--card-gap)) / var(--per-page));
+    grid-template-rows: repeat(5, auto);
+    column-gap: var(--card-gap);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
@@ -195,88 +238,111 @@ const pages = Math.ceil(experiences.length / 3);
   }
   .track::-webkit-scrollbar { display: none; }
   .track:focus-visible { outline-offset: 6px; }
-  .card { scroll-snap-align: start; text-align: center; }
-  .card-media { position: relative; }
-  .badge {
-    position: absolute;
-    top: 0.6rem;
-    left: 0.6rem;
-    padding: 0.3rem 0.5rem;
-    background: var(--linho);
-    font-size: 0.625rem;
-    line-height: 1.3;
-    font-weight: 600;
-    font-stretch: var(--wide);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+  .card {
+    display: grid;
+    grid-row: 1 / -1;
+    grid-template-rows: subgrid;
+    align-content: start;
+    scroll-snap-align: start;
   }
-  .card-name {
+  .card-label {
+    grid-row: 2;
+    align-self: end;
     margin-top: 1rem;
-    font-size: 0.75rem;
+    overflow: clip;
+    color: var(--ouro);
+    font-size: 0.625rem;
     line-height: 1.5;
     font-weight: 600;
-    font-stretch: var(--wide);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     text-wrap: balance;
   }
-  .card-line { margin-top: 0.25rem; padding-inline: 0.25rem; font-size: 0.75rem; color: var(--muted); }
+  /* "Monthly · Members": the line only breaks between the two, and then without the dot
+     (at the start of a line it falls outside the label, which hides it) */
+  .card-label > span { display: flex; flex-wrap: wrap; margin-left: -1.1em; }
+  .card-label > span > span { position: relative; padding-left: 1.1em; }
+  .card-label > span > span::before { content: '·'; position: absolute; left: 0.35em; }
+  @media (min-width: 48rem) {
+    .card-label { font-stretch: var(--wide); letter-spacing: 0.1em; }
+  }
+  .card-name {
+    grid-row: 3;
+    margin-top: 0.3rem;
+    font-family: var(--display);
+    font-size: clamp(0.9375rem, 0.82rem + 0.45vw, 1.1875rem);
+    line-height: 1.1;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .card-line { grid-row: 4; margin-top: 0.5rem; font-size: 0.8125rem; color: var(--muted); }
 
-  .pager { display: flex; align-items: center; justify-content: center; margin-top: 1.25rem; }
+  /* The seven hills: seven Lima dots on a line */
+  .seven-dots {
+    grid-row: 5;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.9rem;
+  }
+  .seven-dots::before {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto;
+    border-top: 1px solid var(--linho);
+  }
+  .seven-dots i { position: relative; width: 0.625rem; height: 0.625rem; border-radius: 50%; background: var(--lima); }
+
+  .pager { display: flex; align-items: center; margin-top: 1.5rem; }
   .pager-count {
-    min-width: 3.5rem;
-    text-align: center;
+    margin-right: auto;
     font-size: 0.75rem;
     font-weight: 600;
     font-stretch: var(--wide);
     letter-spacing: 0.12em;
   }
-  .pager .icon-button:disabled { visibility: hidden; }
+  .pager-next { margin-right: -0.7rem; }
+  .pager .icon-button:disabled { opacity: 0.35; cursor: default; }
+  .carousel.is-still .pager,
   :global(html:not(.js)) .pager { display: none; }
 
   @media (min-width: 48rem) {
-    .track { --card-gap: 1.75rem; grid-auto-columns: calc((100% - 2 * var(--card-gap)) / 3); }
+    .track { --card-gap: 1.75rem; --per-page: 3; grid-area: 2 / 1 / auto / -1; }
+    /* the count and the arrows sit on the title's line, at the right */
+    .carousel { grid-template-columns: minmax(0, 1fr) auto; }
+    .carousel .block-head { grid-area: 1 / 1; }
+    .pager { grid-area: 1 / 2; align-self: end; margin: 0 0 clamp(1.5rem, 2.6vw, 2.4rem); }
+    .pager-count { margin-right: 0.75rem; }
   }
-  /* Large screens: the arrows sit either side of the photos, the count stays below */
-  @media (min-width: 64rem) {
-    .carousel { max-width: min(58rem, 100% - 7rem); }
-    .pager-prev,
-    .pager-next { position: absolute; top: calc((100cqw - 3.5rem) / 3 * 0.625 - 1.375rem); }
-    .pager-prev { left: -3.5rem; }
-    .pager-next { right: -3.5rem; }
+  @media (min-width: 75rem) {
+    .track { --per-page: 4; }
   }
 
   /* ── Agenda ── */
-  .agenda-label { text-align: center; margin-bottom: 0.4rem; }
-  .events { border-top: 1px solid var(--line); }
+  .events { max-width: 46rem; border-top: 1px solid var(--line); }
   .event {
     display: grid;
-    grid-template-columns: 4.25rem minmax(0, 1fr);
+    grid-template-columns: 4.5rem minmax(0, 1fr);
     gap: 1rem;
     padding-block: 1.25rem;
     border-bottom: 1px solid var(--line);
   }
-  .event-date { font-size: 1.125rem; line-height: 1.35; font-weight: 600; font-stretch: var(--wide); }
+  .event-date { font-family: var(--display); font-size: 1.125rem; line-height: 1.35; }
   .event-format { font-size: 0.75rem; line-height: 1.6; font-weight: 600; font-stretch: var(--wide); letter-spacing: 0.06em; text-transform: uppercase; }
   .event-ed { color: var(--muted); }
   .event-note { margin-top: 0.3rem; }
   .event-meta { margin-top: 0.3rem; font-size: 0.8125rem; color: var(--muted); }
-  .follow { margin-top: 1.25rem; text-align: center; }
+  .follow { margin-top: 1.25rem; }
+  .agenda { padding-bottom: 0; }
 
-  /* ── Editorial: on phones the photo first, then the text; side by side on wider screens,
-     the photo close to the middle and the text centred in the other half ── */
-  .editorial { display: grid; gap: 1.75rem; }
+  /* ── Editorial: on phones the photo first, then the text; side by side on wider screens ── */
+  .editorial { display: grid; gap: 2rem; }
   .editorial :global(.ed-media) { order: -1; }
-  .ed-text {
-    display: grid;
-    justify-items: center;
-    gap: 0.7rem;
-    max-width: 26rem;
-    margin-inline: auto;
-    text-align: center;
-  }
-  .ed-text .cta { margin-top: 0.15rem; }
+  .ed-text { display: grid; justify-items: start; gap: 0.9rem; }
+  .ed-text .accent { max-width: 30rem; }
+  .ed-body { max-width: 32rem; }
   .values {
+    max-width: 32rem;
     font-size: 0.6875rem;
     line-height: 1.8;
     font-weight: 600;
@@ -286,31 +352,77 @@ const pages = Math.ceil(experiences.length / 3);
     color: var(--muted);
   }
   @media (min-width: 48rem) {
-    .editorial { grid-template-columns: 1fr 1fr; column-gap: var(--gap); align-items: center; }
-    .editorial :global(.ed-media) { order: 0; width: min(100%, 30.125rem); justify-self: start; }
-    .editorial.is-reverse :global(.ed-media) { order: -1; justify-self: end; }
-    .ed-text { max-width: 23.75rem; }
+    .editorial { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+    .editorial :global(.ed-media) { order: 0; width: min(100%, 32rem); justify-self: end; }
+    .editorial.is-reverse :global(.ed-media) { order: -1; justify-self: start; }
+    .ed-text { gap: 1.1rem; }
   }
 
-  /* How to join: three short steps */
-  .steps { display: grid; gap: 1rem; margin-block: 0.35rem; }
-  .steps li { display: grid; gap: 0.15rem; justify-items: center; }
-  .step-num { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; color: var(--muted); }
-  .step-name { font-size: 0.75rem; line-height: 1.5; font-weight: 600; font-stretch: var(--wide); letter-spacing: 0.06em; text-transform: uppercase; }
-  .steps p { color: var(--muted); }
-
-  /* Partners: the three kinds */
-  .types { display: grid; gap: 0.8rem; margin-block: 0.25rem; }
+  /* Lists inside a part: the three steps, the three kinds of partner */
+  .item-name { font-size: 0.75rem; line-height: 1.5; font-weight: 600; font-stretch: var(--wide); letter-spacing: 0.06em; text-transform: uppercase; }
+  .steps { width: 100%; max-width: 32rem; border-top: 1px solid var(--line); }
+  .steps li {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    row-gap: 0.1rem;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .step-num { grid-row: span 2; font-family: var(--display); font-size: 0.8125rem; line-height: 1.4; }
+  .types { display: grid; gap: 0.8rem; }
   .types li { display: grid; gap: 0.1rem; }
-  .type-name { font-size: 0.75rem; line-height: 1.5; font-weight: 600; font-stretch: var(--wide); letter-spacing: 0.06em; text-transform: uppercase; }
   .types p { color: var(--muted); }
 
-  /* ── Cities: photo tiles with the name below ── */
-  .tiles { display: grid; gap: 2rem var(--gap); }
-  .tile { display: grid; gap: 1rem; justify-items: center; }
-  .tile :global(.photo) { width: 100%; }
-  .more { margin-top: 2rem; text-align: center; color: var(--muted); }
+  /* ── Partners and the founder. Stacked on phones; on tablets the photo fills the left half;
+     on large screens three columns: the photo, the partners, the founder ── */
+  .trio { display: grid; }
+  .trio-part { display: grid; justify-items: start; align-content: start; gap: 0.9rem; padding: 2.5rem var(--gutter) 2.75rem; }
+  .founder { margin-inline: var(--gutter); padding-inline: 0; border-top: 1px solid var(--line); }
+  .founder-bio { display: grid; gap: 0.35rem; max-width: 30rem; }
+  .founder-links { display: flex; flex-wrap: wrap; gap: 0 1.5rem; }
   @media (min-width: 48rem) {
-    .tiles { grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
+    .trio { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr; }
+    .trio :global(.trio-photo) { grid-row: 1 / -1; width: 100%; height: 100%; }
+    .trio-part { padding: clamp(3rem, 5vw, 4.5rem) clamp(2rem, 4vw, 3.5rem); }
+    .founder { margin-inline: clamp(2rem, 4vw, 3.5rem); padding-inline: 0; }
+  }
+  @media (min-width: 75rem) {
+    .trio { grid-template-columns: minmax(0, 40fr) minmax(0, 34fr) minmax(0, 26fr); grid-template-rows: auto; }
+    .trio-part { padding-inline: clamp(2.5rem, 3.2vw, 3.5rem); }
+    .trio .title { font-size: clamp(2rem, 2.9vw, 2.875rem); }
+    .founder { margin-inline: 0; border-top: 0; }
+    /* a hairline between the two, as tall as their text */
+    .founder { position: relative; }
+    .founder::before {
+      content: '';
+      position: absolute;
+      inset: clamp(3rem, 5vw, 4.5rem) auto clamp(3rem, 5vw, 4.5rem) 0;
+      border-left: 1px solid var(--line);
+    }
+  }
+
+  /* ── Cities: the photo of each city with its name below, and the cities to come ── */
+  .cities { display: grid; gap: 1.5rem; }
+  .tiles { display: grid; gap: 2rem var(--gap); }
+  .tile { display: grid; gap: 0.75rem; }
+  .tile :global(.photo) { width: 100%; }
+  @media (min-width: 64rem) {
+    .cities { grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); grid-template-rows: auto 1fr; column-gap: clamp(2rem, 5vw, 5rem); row-gap: 1rem; }
+    .tiles { grid-area: 1 / 2 / -1 / auto; }
+  }
+
+  /* ── Apply: the text on Linho, the form on Noite (edge to edge on phones) ── */
+  .apply { padding-top: 0; }
+  .apply-grid { display: grid; gap: 2rem; }
+  .apply-text { display: grid; justify-items: start; align-content: start; gap: 0.9rem; }
+  .apply-block { margin-inline: calc(-1 * var(--gutter)); padding: 2.25rem var(--gutter) 2.5rem; }
+  .apply-block :global(.form) { max-width: none; }
+  @media (min-width: 48rem) {
+    .apply-block { margin-inline: 0; padding: clamp(2.25rem, 4vw, 3.5rem); }
+  }
+  @media (min-width: 64rem) {
+    .apply-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: clamp(2rem, 5vw, 5rem); align-items: start; }
+    /* the title stays in view next to the form */
+    .apply-text { position: sticky; top: calc(var(--top-h) + var(--bar-h) + 2rem); }
   }
 </style>
