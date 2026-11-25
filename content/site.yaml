@@ -54,11 +54,6 @@ cities:
 instagram_handle: "@thehillsmembers"
 instagram_url: "https://instagram.com/thehillsmembers"
 
-# The founder's own pages, linked in the Founder block (next to Partners).
-# A link left empty is not shown.
-founder_instagram: "https://www.instagram.com/andrercarvalho05/"
-founder_linkedin: "https://www.linkedin.com/in/andreredondocarvalho"
-
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  4. FORMS
@@ -206,14 +201,23 @@ en:
         line: "Limited collaborations, designed together."
     cta: Partner with us
 
-  # The founder, next to Partners. The two links are in section 3, above.
-  founder:
-    label: Founder
-    name: André Carvalho
-    # EDITABLE: two short lines about the founder, one per "-"
-    bio:
-      - "Entrepreneur and founder of Seven Hills."
-      - "A place, in Lisboa, where people meet for what they live, not for what they show."
+  # The founders, next to Partners: one block per person, in this order.
+  # A link left empty is not shown.
+  founders:
+    label: Founders
+    people:
+      - name: André Carvalho
+        # EDITABLE: two short lines about André, one per "-"
+        bio:
+          - "Entrepreneur and founder of Seven Hills."
+          - "A place, in Lisboa, where people meet for what they live, not for what they show."
+        instagram: "https://www.instagram.com/andrercarvalho05/"
+        linkedin: "https://www.linkedin.com/in/andreredondocarvalho"
+      - name: Tiago Cipriano
+        # EDITABLE: two short lines about Tiago, one per "-" (none yet, so only the name and the links show)
+        bio: []
+        instagram: "https://www.instagram.com/tiagocipriano_/"
+        linkedin: "https://www.linkedin.com/in/tiago-cipriano-/"
 
   cities:
     title: Cities

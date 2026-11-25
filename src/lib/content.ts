@@ -20,8 +20,6 @@ function formspree(value: unknown): string {
 export const site = {
   instagramHandle: data.instagram_handle as string,
   instagramUrl: data.instagram_url as string,
-  /** The founder's own pages. An empty one is not linked. */
-  founder: { instagram: (data.founder_instagram ?? '') as string, linkedin: (data.founder_linkedin ?? '') as string },
   cities: (data.cities ?? []) as string[],
   /** Formspree addresses for the forms. */
   forms: {

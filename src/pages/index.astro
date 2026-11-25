@@ -1,7 +1,7 @@
 ---
 // The home page: a maison's layout, with colour blocks and heavy titles.
 // hero (photo + text, Linho) · the five experiences in a carousel (Noite) · the agenda, while
-// there are dates · The Circle (Linho) · How to join (Sálvia) · Partners and the founder (Areia)
+// there are dates · The Circle (Linho) · How to join (Sálvia) · Partners and the founders (Areia)
 // · the cities · the application form, on a Noite block. The newsletter is in the footer.
 // Each part has one line in italics (accent). Photo places are listed in content/site.yaml.
 import Base from '../layouts/Base.astro';
@@ -18,10 +18,15 @@ const experiences = t.experiences.items as Item[];
 // Four cards at a time on large screens, three on tablets, two on phones (the script sets the real count)
 const pages = Math.ceil(experiences.length / 4);
 
-const founderLinks = [
-  { name: 'Instagram', href: site.founder.instagram },
-  { name: 'LinkedIn', href: site.founder.linkedin },
-].filter((l) => l.href);
+type Person = { name: string; bio?: string[]; instagram?: string; linkedin?: string };
+const founders = (t.founders.people as Person[]).map((p) => ({
+  name: p.name,
+  bio: p.bio ?? [],
+  links: [
+    { name: 'Instagram', href: p.instagram },
+    { name: 'LinkedIn', href: p.linkedin },
+  ].filter((l) => l.href),
+}));
 ---
 <Base>
   <!-- HERO · the photo, and the text on Linho (side by side on wide screens) -->
@@ -136,7 +141,7 @@ const founderLinks = [
     </div>
   </section>
 
-  <!-- PARTNERS · Areia · the photo, the partners, and the founder next to them -->
+  <!-- PARTNERS · Areia · the photo, the partners, and the founders next to them -->
   <div id="partners" class="trio on-areia">
     <Photo name="partners" ratio="4 / 5" mobileRatio="15 / 16" class="trio-photo" sizes="(min-width: 75rem) 40vw, (min-width: 48rem) 50vw, 100vw" />
     <section class="trio-part" aria-labelledby="partners-title">
@@ -153,17 +158,19 @@ const founderLinks = [
       </ul>
       <a class="cta" href={link('/partners/')}>{t.partners.cta}</a>
     </section>
-    <section id="founder" class="trio-part founder" aria-labelledby="founder-title">
-      <p class="label">{t.founder.label}</p>
-      <h2 id="founder-title" class="title">{t.founder.name}</h2>
-      <div class="founder-bio">
-        {t.founder.bio.map((line: string) => <p>{line}</p>)}
-      </div>
-      {founderLinks.length > 0 && (
-        <ul class="founder-links">
-          {founderLinks.map((l) => <li><a class="cta" href={l.href} rel="noopener">{l.name}</a></li>)}
-        </ul>
-      )}
+    <section id="founders" class="trio-part founders" aria-labelledby="founders-title">
+      <h2 id="founders-title" class="label">{t.founders.label}</h2>
+      {founders.map((p) => (
+        <div class="person">
+          <h3 class="title">{p.name}</h3>
+          {p.bio.length > 0 && <div class="person-bio">{p.bio.map((line) => <p>{line}</p>)}</div>}
+          {p.links.length > 0 && (
+            <ul class="person-links">
+              {p.links.map((l) => <li><a class="cta" href={l.href} rel="noopener" aria-label={`${l.name}, ${p.name}`}>{l.name}</a></li>)}
+            </ul>
+          )}
+        </div>
+      ))}
     </section>
   </div>
 
@@ -374,27 +381,29 @@ const founderLinks = [
   .types li { display: grid; gap: 0.1rem; }
   .types p { color: var(--muted); }
 
-  /* ── Partners and the founder. Stacked on phones; on tablets the photo fills the left half;
-     on large screens three columns: the photo, the partners, the founder ── */
+  /* ── Partners and the founders. Stacked on phones; on tablets the photo fills the left half;
+     on large screens three columns: the photo, the partners, the founders ── */
   .trio { display: grid; }
   .trio-part { display: grid; justify-items: start; align-content: start; gap: 0.9rem; padding: 2.5rem var(--gutter) 2.75rem; }
-  .founder { margin-inline: var(--gutter); padding-inline: 0; border-top: 1px solid var(--line); }
-  .founder-bio { display: grid; gap: 0.35rem; max-width: 30rem; }
-  .founder-links { display: flex; flex-wrap: wrap; gap: 0 1.5rem; }
+  .founders { margin-inline: var(--gutter); padding-inline: 0; border-top: 1px solid var(--line); }
+  .person { display: grid; justify-items: start; gap: 0.9rem; }
+  .person + .person { margin-top: 1.6rem; }
+  .person-bio { display: grid; gap: 0.35rem; max-width: 30rem; }
+  .person-links { display: flex; flex-wrap: wrap; gap: 0 1.5rem; }
   @media (min-width: 48rem) {
     .trio { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr; }
     .trio :global(.trio-photo) { grid-row: 1 / -1; width: 100%; height: 100%; }
     .trio-part { padding: clamp(3rem, 5vw, 4.5rem) clamp(2rem, 4vw, 3.5rem); }
-    .founder { margin-inline: clamp(2rem, 4vw, 3.5rem); padding-inline: 0; }
+    .founders { margin-inline: clamp(2rem, 4vw, 3.5rem); padding-inline: 0; }
   }
   @media (min-width: 75rem) {
     .trio { grid-template-columns: minmax(0, 40fr) minmax(0, 34fr) minmax(0, 26fr); grid-template-rows: auto; }
     .trio-part { padding-inline: clamp(2.5rem, 3.2vw, 3.5rem); }
     .trio .title { font-size: clamp(2rem, 2.9vw, 2.875rem); }
-    .founder { margin-inline: 0; border-top: 0; }
+    .founders { margin-inline: 0; border-top: 0; }
     /* a hairline between the two, as tall as their text */
-    .founder { position: relative; }
-    .founder::before {
+    .founders { position: relative; }
+    .founders::before {
       content: '';
       position: absolute;
       inset: clamp(3rem, 5vw, 4.5rem) auto clamp(3rem, 5vw, 4.5rem) 0;
